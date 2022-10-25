@@ -1,0 +1,137 @@
+schema {
+  query: query_root
+  mutation: mutation_root
+}
+
+
+type mutation_root {
+  createAppItem(input: AppItemInput!): AppItemOutput!
+  createSiteText(input: SiteTextInput!): SiteTextOutput!
+  createSiteTextTranslation(input: SiteTextTranslationInput!): SiteTextTranslationOutput!
+  createLanguageProficiency(input: LanguageProficiencyInput!): LanguageProficiencyOutput!
+}
+
+# SHOWCASE INPUTS
+
+input AppItemInput {
+  app_name: String!
+}
+
+input SiteTextInput {
+  app: Int!
+  description: String!
+  language_id: Int
+  language_table: String
+  site_text_key: String!
+}
+
+input SiteTextTranslationInput {
+  language_id: Int
+  language_table: String
+  site_text: Int!
+  site_text_translation: String!
+  user_id: String!
+}
+
+input LanguageProficiencyInput {
+  language_id: Int!
+  language_table: String!
+  skill_level: LanguageProficiencyEnum!
+  user_id: String!
+} 
+
+
+
+type query_root {
+  #SHOWCASE
+  """
+  fetch apps
+  """
+  appItems: [AppItem!]!
+
+
+  """
+  fetch site texts
+  """
+  siteTexts: [SiteText!]!
+
+  """
+  fetch site text translations
+  """
+  siteTextTranslations: [SiteTextTranslation!]!
+
+  """
+  fetch language profiencies
+  """
+  languageProficiencies: [LanguageProficiency!]!
+}
+
+
+
+# SHOWCASE OUTPUTS
+
+type AppItemOutput {
+  appItem: AppItem!
+}
+
+type SiteTextOutput {
+  siteText: SiteText!
+}
+
+type SiteTextTranslationOutput {
+  siteTextTranslation: SiteTextTranslation!
+}
+
+type LanguageProficiencyOutput {
+  languageProficiency: LanguageProficiency!
+}
+
+type mutation_root {
+  createAppItem(input: AppItemInput!): AppItemOutput!
+  createSiteText(input: SiteTextInput!): SiteTextOutput!
+  createSiteTextTranslation(input: SiteTextTranslationInput!): SiteTextTranslationOutput!
+  createLanguageProficiency(input: LanguageProficiencyInput!): LanguageProficiencyOutput!
+}
+
+# SHOWCASE TYPES
+
+type AppItem {
+  app_name: String!
+  id: Int!
+}
+
+type SiteText {
+  app: Int!
+  description: String!
+  id: Int!
+  language_id: Int!
+  language_table: String!
+  site_text_key: String!
+}
+
+type SiteTextTranslation {
+  id: Int!
+  language_id: Int!
+  language_table: String!
+  site_text: Int!
+  site_text_translation: String!
+  user_id: String!
+}
+
+type LanguageProficiency {
+  id: Int!
+  language_id: Int!
+  language_table: String!
+  skill_level: LanguageProficiencyEnum!
+  user_id: String!
+  ref_name: String!
+}
+
+
+enum LanguageProficiencyEnum {
+  Conversational
+  Fluent
+  Proficient
+  RecognizeWords
+  StartedLearning
+}

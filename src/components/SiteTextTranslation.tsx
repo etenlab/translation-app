@@ -111,7 +111,7 @@ const SiteTextTranslation: React.FC = () => {
                     site_text: siteText?.id,
                     site_text_translation: siteTextTranslation,
                     language_id: languageId,
-                    language_table: "language_table",
+                    language_table: "iso_639_3",
                     user_id: "user_id",
                 },
             },

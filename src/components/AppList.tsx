@@ -56,8 +56,6 @@ const AppList: React.FC = () => {
         setAppName("");
     };
 
-    console.log("app-list");
-
     return (
         <IonContent>
             <div style={{ padding: "60px 20px 60px 20px" }}>

@@ -3,6 +3,8 @@ import { createRoot } from "react-dom/client";
 import App from "./App";
 import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
+import { ReactKeycloakProvider } from "@react-keycloak/web";
+import keycloak from "./keycloak";
 
 // import reportWebVitals from "./reportWebVitals";
 
@@ -11,14 +13,36 @@ const client = new ApolloClient({
     cache: new InMemoryCache(),
 });
 
+const eventLogger = (event: unknown, error: unknown) => {
+    console.log("onKeycloakEvent", event, error);
+};
+
+const tokenLogger = (tokens: unknown) => {
+    console.log("onKeycloakTokens", tokens);
+};
+
 const container = document.getElementById("root");
 const root = createRoot(container!);
 root.render(
-    <React.StrictMode>
-        <ApolloProvider client={client}>
-            <App />
-        </ApolloProvider>
-    </React.StrictMode>
+    <ReactKeycloakProvider
+        initOptions={{
+            onLoad: "check-sso",
+            checkLoginIframe: false,
+            // flow: "implicit",
+            // useNonce: true,
+        }}
+        // this is to prevent Login page rendering
+        LoadingComponent={<></>}
+        authClient={keycloak}
+        onEvent={eventLogger}
+        onTokens={tokenLogger}
+    >
+        <React.StrictMode>
+            <ApolloProvider client={client}>
+                <App />
+            </ApolloProvider>
+        </React.StrictMode>
+    </ReactKeycloakProvider>
 );
 
 // If you want your app to work offline and load faster, you can change

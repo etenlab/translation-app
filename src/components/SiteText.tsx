@@ -59,7 +59,7 @@ const SiteText: React.FC = () => {
                     description: siteTextDescription,
                     site_text_key: siteText,
                     language_id: 1,
-                    language_table: "language table",
+                    language_table: "iso_639_3",
                 },
             },
             update: (cache, result) => {

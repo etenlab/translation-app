@@ -13,6 +13,8 @@ import {
     IonToolbar,
 } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
+import { useKeycloak } from "@react-keycloak/web";
+import { useCallback } from "react";
 import { Route } from "react-router";
 import AppList from "../components/AppList";
 import LanguageProficiency from "../components/LanguageProficiency";
@@ -21,6 +23,12 @@ import SiteTextTranslation from "../components/SiteTextTranslation";
 import "./Home.css";
 
 const Home: React.FC = () => {
+    const { keycloak } = useKeycloak();
+
+    const logout = useCallback(() => {
+        keycloak?.logout();
+    }, [keycloak]);
+
     return (
         <IonPage>
             <IonReactRouter>
@@ -53,6 +61,23 @@ const Home: React.FC = () => {
                             <IonMenuButton />
                         </IonButtons>
                         <IonTitle>Showcase</IonTitle>
+                        <IonButtons slot="primary">
+                            {keycloak?.authenticated && (
+                                <button
+                                    style={{
+                                        fontSize: "16px",
+                                        padding: "10px 5px",
+                                        color: "#000",
+                                        backgroundColor: "#fff",
+                                        margin: "0px 2px",
+                                    }}
+                                    type="button"
+                                    onClick={logout}
+                                >
+                                    Logout
+                                </button>
+                            )}
+                        </IonButtons>
                     </IonToolbar>
                 </IonHeader>
                 <IonContent fullscreen id="showcase-content" scrollY={true}>

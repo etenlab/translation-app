@@ -11,6 +11,7 @@
     "@capacitor/status-bar": "4.0.1",
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
+    "@habx/apollo-multi-endpoint-link": "^2.8.0",
     "@ionic/react": "^6.0.0",
     "@ionic/react-router": "^6.0.0",
     "@mui/material": "^5.10.10",

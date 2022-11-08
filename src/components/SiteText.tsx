@@ -180,7 +180,7 @@ const SiteText: React.FC = () => {
                                     style={{ cursor: "pointer" }}
                                     onClick={() =>
                                         history.push({
-                                            pathname: `/showcase/site-text-translation`,
+                                            pathname: `/translation-app/site-text-translation`,
                                             search: `?app_id=${item.app}&site_text_id=${item.id}`,
                                         })
                                     }

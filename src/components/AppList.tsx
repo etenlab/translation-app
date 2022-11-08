@@ -21,6 +21,9 @@ const AppList: React.FC = () => {
     const { control, handleSubmit } = useForm();
     const [appName, setAppName] = useState<string>("");
     const { data } = useQuery(appItemsQuery);
+
+    console.log("data?? ", data);
+
     const appData = useMemo(() => data, [data]);
     const [createAppItem] = useMutation(createAppItemMutation);
 

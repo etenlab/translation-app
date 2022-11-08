@@ -29,27 +29,29 @@ const Home: React.FC = () => {
         keycloak?.logout();
     }, [keycloak]);
 
+    console.log(keycloak)
+
     return (
         <IonPage>
             <IonReactRouter>
-                <IonMenu contentId="showcase-content">
+                <IonMenu contentId="translation-app-content">
                     <IonHeader>
                         <IonToolbar>
-                            <IonTitle>Showcase</IonTitle>
+                            <IonTitle>Translation App</IonTitle>
                         </IonToolbar>
                     </IonHeader>
                     <IonContent fullscreen>
                         <IonList>
-                            <IonItem href="/showcase/app-list">
+                            <IonItem href="/translation-app/app-list">
                                 <IonLabel>App List</IonLabel>
                             </IonItem>
-                            <IonItem href="/showcase/site-text">
+                            <IonItem href="/translation-app/site-text">
                                 <IonLabel>Site Text</IonLabel>
                             </IonItem>
-                            <IonItem href="/showcase/site-text-translation">
+                            <IonItem href="/translation-app/site-text-translation">
                                 <IonLabel>Site Text Translation</IonLabel>
                             </IonItem>
-                            <IonItem href="/showcase/language-proficiency">
+                            <IonItem href="/translation-app/language-proficiency">
                                 <IonLabel>Language Proficiency</IonLabel>
                             </IonItem>
                         </IonList>
@@ -60,7 +62,7 @@ const Home: React.FC = () => {
                         <IonButtons slot="start">
                             <IonMenuButton />
                         </IonButtons>
-                        <IonTitle>Showcase</IonTitle>
+                        <IonTitle>Translation App</IonTitle>
                         <IonButtons slot="primary">
                             {keycloak?.authenticated && (
                                 <button
@@ -80,22 +82,22 @@ const Home: React.FC = () => {
                         </IonButtons>
                     </IonToolbar>
                 </IonHeader>
-                <IonContent fullscreen id="showcase-content" scrollY={true}>
+                <IonContent fullscreen id="translation-app-content" scrollY={true}>
                     <IonRouterOutlet>
                         <Route
-                            path="/showcase/app-list"
+                            path="/translation-app/app-list"
                             render={() => <AppList />}
                         />
                         <Route
-                            path="/showcase/site-text"
+                            path="/translation-app/site-text"
                             render={() => <SiteText />}
                         />
                         <Route
-                            path="/showcase/site-text-translation/:app_id?/:site_text_id?"
+                            path="/translation-app/site-text-translation/:app_id?/:site_text_id?"
                             render={() => <SiteTextTranslation />}
                         />
                         <Route
-                            path="/showcase/language-proficiency"
+                            path="/translation-app/language-proficiency"
                             render={() => <LanguageProficiency />}
                         />
                     </IonRouterOutlet>

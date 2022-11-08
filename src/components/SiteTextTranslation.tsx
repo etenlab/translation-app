@@ -59,6 +59,8 @@ const SiteTextTranslation: React.FC = () => {
         },
     });
 
+    console.log("app id", siteTextRequest);
+
     const siteTextData: { siteTextsByAppId: ISiteText[] } = useMemo(
         () => siteTextRequest.data,
         [siteTextRequest.data]

@@ -1,7 +1,7 @@
 import { gql } from "@apollo/client";
 
 export const appItemsQuery = gql`
-    query Query {
+    query appItems @api(name: site_text) {
         appItems {
             app_name
             id
@@ -10,7 +10,7 @@ export const appItemsQuery = gql`
 `;
 
 export const createAppItemMutation = gql`
-    mutation Mutation($input: AppItemInput!) {
+    mutation createAppItem($input: AppItemInput!) @api(name: site_text) {
         createAppItem(input: $input) {
             appItem {
                 id
@@ -20,7 +20,7 @@ export const createAppItemMutation = gql`
 `;
 
 export const siteTextsQuery = gql`
-    query Query {
+    query siteTexts @api(name: site_text) {
         siteTexts {
             app
             description
@@ -31,7 +31,7 @@ export const siteTextsQuery = gql`
 `;
 
 export const createSiteTextMutation = gql`
-    mutation Mutation($input: SiteTextInput!) {
+    mutation createSiteText($input: SiteTextInput!) @api(name: site_text) {
         createSiteText(input: $input) {
             siteText {
                 app
@@ -43,7 +43,7 @@ export const createSiteTextMutation = gql`
     }
 `;
 export const siteTextsByAppIdQuery = gql`
-    query Query($siteTextsByAppIdId: Float!) {
+    query siteTextsByAppId($siteTextsByAppIdId: Float!) @api(name: site_text) {
         siteTextsByAppId(id: $siteTextsByAppIdId) {
             app
             description
@@ -56,7 +56,7 @@ export const siteTextsByAppIdQuery = gql`
 `;
 
 export const siteTextTranslationsQuery = gql`
-    query Query {
+    query siteTextTranslations @api(name: site_text) {
         siteTextTranslations {
             language_id
             id
@@ -69,7 +69,8 @@ export const siteTextTranslationsQuery = gql`
 `;
 
 export const createSiteTextTranslationMutation = gql`
-    mutation Mutation($input: SiteTextTranslationInput!) {
+    mutation createSiteTextTranslation($input: SiteTextTranslationInput!)
+    @api(name: site_text) {
         createSiteTextTranslation(input: $input) {
             siteTextTranslation {
                 id
@@ -83,7 +84,7 @@ export const createSiteTextTranslationMutation = gql`
     }
 `;
 export const languageProficienciesQuery = gql`
-    query Query {
+    query languageProficiencies @api(name: site_text) {
         languageProficiencies {
             id
             language_id
@@ -96,7 +97,8 @@ export const languageProficienciesQuery = gql`
 `;
 
 export const createLanguageProficiencyMutation = gql`
-    mutation Mutation($input: LanguageProficiencyInput!) {
+    mutation createLanguageProficiency($input: LanguageProficiencyInput!)
+    @api(name: site_text) {
         createLanguageProficiency(input: $input) {
             languageProficiency {
                 id

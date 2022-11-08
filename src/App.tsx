@@ -36,17 +36,17 @@ const App: React.FC = () => {
                 <IonRouterOutlet>
                     <Route
                         exact
-                        path="/showcase*"
+                        path="/translation-app*"
                         render={() => {
                             return isAuthed ? <Home /> : <Login />;
                         }}
                     />
                     <Route path="/login" render={() => <Login />} />
                     <Route exact path="/">
-                        <Redirect to="/showcase" />
+                        <Redirect to="/translation-app" />
                     </Route>
                     <Route>
-                        <Redirect to="/showcase" />
+                        <Redirect to="/translation-app" />
                     </Route>
                 </IonRouterOutlet>
             </IonReactRouter>

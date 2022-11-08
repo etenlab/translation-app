@@ -2,15 +2,28 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App";
 import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
-import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
+import {
+    ApolloClient,
+    createHttpLink,
+    InMemoryCache,
+    ApolloProvider,
+    ApolloLink,
+} from "@apollo/client";
 import { ReactKeycloakProvider } from "@react-keycloak/web";
 import keycloak from "./keycloak";
-
-// import reportWebVitals from "./reportWebVitals";
+import { MultiAPILink } from "@habx/apollo-multi-endpoint-link";
 
 const client = new ApolloClient({
-    uri: "http://localhost:3001/graphql",
     cache: new InMemoryCache(),
+    link: ApolloLink.from([
+        new MultiAPILink({
+            endpoints: {
+                site_text: "http://localhost:3001",
+                voting: "http://localhost:3002",
+            },
+            createHttpLink: () => createHttpLink(),
+        }),
+    ]),
 });
 
 const eventLogger = (event: unknown, error: unknown) => {

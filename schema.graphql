@@ -4,13 +4,6 @@ schema {
 }
 
 
-type mutation_root {
-  createAppItem(input: AppItemInput!): AppItemOutput!
-  createSiteText(input: SiteTextInput!): SiteTextOutput!
-  createSiteTextTranslation(input: SiteTextTranslationInput!): SiteTextTranslationOutput!
-  createLanguageProficiency(input: LanguageProficiencyInput!): LanguageProficiencyOutput!
-}
-
 # SHOWCASE INPUTS
 
 input AppItemInput {
@@ -40,33 +33,42 @@ input LanguageProficiencyInput {
   user_id: String!
 } 
 
+input ElectionInput {
+  app_id: Int!
+  created_by: String!
+  name: String!
+}
+
+input BallotEntryInput {
+  created_by: String!
+  election_id: Int!
+  row: Int!
+  table_name: String!
+}
+
+input VoteInput {
+  ballot_entry_id: Int!
+  up: Boolean!
+  user_id: String!
+}
+
+input UpdateVote {
+  up: Boolean!
+  user_id: String!
+  vote_id: Int!
+}
 
 
 type query_root {
   #SHOWCASE
-  """
-  fetch apps
-  """
   appItems: [AppItem!]!
-
-
-  """
-  fetch site texts
-  """
   siteTexts: [SiteText!]!
-
-  """
-  fetch site text translations
-  """
   siteTextTranslations: [SiteTextTranslation!]!
-
-  """
-  fetch language profiencies
-  """
   languageProficiencies: [LanguageProficiency!]!
+  ballotEntryByRowId: BallotEntry!
+  electionByTableName: Election!
+  votes(user_id: String): [Vote!]!
 }
-
-
 
 # SHOWCASE OUTPUTS
 
@@ -86,11 +88,27 @@ type LanguageProficiencyOutput {
   languageProficiency: LanguageProficiency!
 }
 
+type ElectionOutput {
+  election: Election!
+}
+
+type BallotEntryOutput {
+  ballotEntry: BallotEntry!
+}
+
+type VoteOutput {
+  vote: Vote!
+}
+
 type mutation_root {
   createAppItem(input: AppItemInput!): AppItemOutput!
+  createBallotEntry(input: BallotEntryInput!): BallotEntryOutput!
+  createElection(input: ElectionInput!): ElectionOutput!
   createSiteText(input: SiteTextInput!): SiteTextOutput!
   createSiteTextTranslation(input: SiteTextTranslationInput!): SiteTextTranslationOutput!
   createLanguageProficiency(input: LanguageProficiencyInput!): LanguageProficiencyOutput!
+  createVote(input: VoteInput!): VoteOutput!
+  updateVote(input: UpdateVote!): Boolean!
 }
 
 # SHOWCASE TYPES
@@ -127,6 +145,30 @@ type LanguageProficiency {
   ref_name: String!
 }
 
+type Election {
+  app_id: Int!
+  created_by: String!
+  id: Int!
+  name: String!
+  row: Int!
+  table_name: String!
+}
+
+type BallotEntry {
+  created_by: String!
+  election_id: Int!
+  id: Int!
+  row: Int!
+  table_name: String!
+}
+
+type Vote {
+  ballot_entry_id: Int!
+  ballot_entry: BallotEntry!
+  id: Int!
+  up: Boolean!
+  user_id: String!
+}
 
 enum LanguageProficiencyEnum {
   Conversational

@@ -22,14 +22,12 @@ import SiteText from "../components/SiteText";
 import SiteTextTranslation from "../components/SiteTextTranslation";
 import "./Home.css";
 
-const Home: React.FC = () => {
+const Home = () => {
     const { keycloak } = useKeycloak();
 
     const logout = useCallback(() => {
         keycloak?.logout();
     }, [keycloak]);
-
-    console.log(keycloak)
 
     return (
         <IonPage>
@@ -82,7 +80,11 @@ const Home: React.FC = () => {
                         </IonButtons>
                     </IonToolbar>
                 </IonHeader>
-                <IonContent fullscreen id="translation-app-content" scrollY={true}>
+                <IonContent
+                    fullscreen
+                    id="translation-app-content"
+                    scrollY={true}
+                >
                     <IonRouterOutlet>
                         <Route
                             path="/translation-app/app-list"

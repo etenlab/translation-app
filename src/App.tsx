@@ -26,7 +26,7 @@ import "./styles.css";
 import Login from "./pages/Login";
 setupIonicReact();
 
-const App: React.FC = () => {
+const App = () => {
     const { keycloak } = useKeycloak();
     const isAuthed = keycloak?.authenticated;
 

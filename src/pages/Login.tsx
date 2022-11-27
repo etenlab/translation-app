@@ -11,7 +11,7 @@ import { useKeycloak } from "@react-keycloak/web";
 import { useCallback } from "react";
 import "./Home.css";
 
-const Login: React.FC = () => {
+const Login = () => {
     const { keycloak } = useKeycloak();
     const login = useCallback(() => {
         keycloak?.login({});

@@ -43,8 +43,8 @@ export const createSiteTextMutation = gql`
     }
 `;
 export const siteTextsByAppIdQuery = gql`
-    query siteTextsByAppId($siteTextsByAppIdId: Float!) @api(name: site_text) {
-        siteTextsByAppId(id: $siteTextsByAppIdId) {
+    query SiteTextsByApp($siteTextsByAppId: Float!) @api(name: site_text) {
+        siteTextsByApp(id: $siteTextsByAppId) {
             app
             description
             id
@@ -106,6 +106,99 @@ export const createLanguageProficiencyMutation = gql`
                 language_table
                 user_id
                 skill_level
+            }
+        }
+    }
+`;
+
+export const createElectionMutation = gql`
+    mutation createElection($input: ElectionInput!) @api(name: voting) {
+        createElection(input: $input) {
+            election {
+                app_id
+                created_by
+                id
+                name
+            }
+        }
+    }
+`;
+
+export const createBallotEntryMutation = gql`
+    mutation createBallotEntryMutation($input: BallotEntryInput!)
+    @api(name: voting) {
+        createBallotEntry(input: $input) {
+            ballotEntry {
+                created_by
+                election_id
+                id
+                row
+                table_name
+            }
+        }
+    }
+`;
+
+export const electionByTableNameQuery = gql`
+    query electionByTableName($input: ElectionIdInput!) @api(name: voting) {
+        electionByTableName(input: $input) {
+            app_id
+            created_by
+            id
+            name
+            row
+            table_name
+        }
+    }
+`;
+
+export const createVoteMutation = gql`
+    mutation CreateVote($input: VoteInput!) @api(name: voting) {
+        createVote(input: $input) {
+            vote {
+                ballot_entry_id
+                id
+                up
+                user_id
+            }
+        }
+    }
+`;
+
+export const updateVoteMutation = gql`
+    mutation UpdateVote($input: UpdateVote!) @api(name: voting) {
+        updateVote(input: $input) {
+            id
+            up
+            user_id
+            ballot_entry {
+                id
+            }
+        }
+    }
+`;
+
+export const ballotEntryByRowIdQuery = gql`
+    query BallotEntryByRowId($row: Float!) @api(name: voting) {
+        ballotEntryByRowId(row: $row) {
+            created_by
+            election_id
+            id
+            row
+            table_name
+        }
+    }
+`;
+
+export const votesQuery = gql`
+    query Votes($userId: String) @api(name: voting) {
+        votes(user_id: $userId) {
+            ballot_entry_id
+            id
+            up
+            user_id
+            ballot_entry {
+                row
             }
         }
     }

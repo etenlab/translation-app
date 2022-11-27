@@ -1,6 +1,7 @@
 import {
     IonButton,
     IonContent,
+    IonIcon,
     IonInput,
     IonItem,
     IonList,
@@ -11,11 +12,17 @@ import {
 import { Controller, useForm } from "react-hook-form";
 import {
     appItemsQuery,
+    ballotEntryByRowIdQuery,
+    createBallotEntryMutation,
     createSiteTextTranslationMutation,
+    createVoteMutation,
+    electionByTableNameQuery,
     siteTextsByAppIdQuery,
     siteTextTranslationsQuery,
+    updateVoteMutation,
+    votesQuery,
 } from "../common/queries";
-import { useMutation, useQuery } from "@apollo/client";
+import { useMutation, useLazyQuery, useQuery } from "@apollo/client";
 import { useEffect, useMemo, useState } from "react";
 import { IAppItem } from "./AppList";
 import { ISiteText } from "./SiteText";
@@ -23,77 +30,135 @@ import { useLocation } from "react-router";
 import queryString from "query-string";
 import { Autocomplete, TextField } from "@mui/material";
 import { iso_639_3_enum } from "../common/iso_639_3_enum";
+import { useKeycloak } from "@react-keycloak/web";
+import { thumbsUpSharp, thumbsDownSharp } from "ionicons/icons";
 
 export interface ISiteTextTranslation {
     id: number;
     site_text: number;
-    site_text_translation: number;
+    site_text_translation: string;
     user_id: string;
     language_id: number;
     language_table: string;
 }
 
-const SiteTextTranslation: React.FC = () => {
+export interface IBallotEntry {
+    id: number;
+    row: number;
+    table_name: number;
+    created_by: string;
+    election_id: string;
+}
+
+export interface IVote {
+    id: number;
+    ballot_entry: IBallotEntry;
+    up: boolean;
+    user_id: string;
+}
+
+const SiteTextTranslation = () => {
     const [present] = useIonToast();
+    const { search } = useLocation();
+    const { keycloak } = useKeycloak();
     const { control, handleSubmit } = useForm();
+
     const [app, setApp] = useState<IAppItem | undefined>(undefined);
     const [siteText, setSiteText] = useState<ISiteText | undefined>(undefined);
     const [siteTextTranslation, setSiteTextTranslation] = useState<string>("");
     const [languageId, setLanguageId] = useState<string>("");
+    const [userId, setUserId] = useState<string>("");
+    const [votesAA, setVotes] = useState<IVote[] | undefined>(undefined);
 
-    const appItemsRequest = useQuery(appItemsQuery);
-
-    const { search } = useLocation();
-
+    const iso_639_3_options = useMemo(() => Object.keys(iso_639_3_enum), []);
     const params = queryString.parse(search);
 
-    const appData: { appItems: IAppItem[] } = useMemo(
-        () => appItemsRequest.data,
-        [appItemsRequest.data]
+    const [getVotes] = useLazyQuery(votesQuery);
+    const { data: votesData } = useQuery(votesQuery, {
+        variables: { userId: userId },
+    });
+    const [getBallotEntry] = useLazyQuery(ballotEntryByRowIdQuery);
+    const { data: appItemsData } = useQuery(appItemsQuery);
+    const { data: siteTextTranslationsData } = useQuery(
+        siteTextTranslationsQuery
     );
+    const { data: electionData } = useQuery(electionByTableNameQuery, {
+        skip: siteText === undefined,
+        variables: {
+            input: {
+                table_name: "site_text_keys",
+                row: siteText?.id!,
+            },
+        },
+    });
+
+    const electionId: number = useMemo(
+        () => electionData?.electionByTableName?.id!,
+        [electionData]
+    );
+
+    const siteTextTranslationData: {
+        siteTextTranslations: ISiteTextTranslation[];
+    } = useMemo(() => siteTextTranslationsData, [siteTextTranslationsData]);
 
     const siteTextRequest = useQuery(siteTextsByAppIdQuery, {
         skip: app?.id === undefined,
         variables: {
-            siteTextsByAppIdId: app?.id ?? +params.app_id!,
+            siteTextsByAppId: app?.id ?? +params.app_id!,
         },
     });
 
-    console.log("app id", siteTextRequest);
+    const appData: { appItems: IAppItem[] } = useMemo(
+        () => appItemsData,
+        [appItemsData]
+    );
 
-    const siteTextData: { siteTextsByAppId: ISiteText[] } = useMemo(
+    const siteTextData: { siteTextsByApp: ISiteText[] } = useMemo(
         () => siteTextRequest.data,
         [siteTextRequest.data]
     );
 
-    const { data } = useQuery(siteTextTranslationsQuery);
-
-    const siteTextTranslationData: {
-        siteTextTranslations: ISiteTextTranslation[];
-    } = useMemo(() => data, [data]);
-
-    const [createSiteTextTranslation] = useMutation(
-        createSiteTextTranslationMutation
-    );
-
-    // Add languages filter (userId)
+    const isDisabled =
+        !siteTextData ||
+        (siteTextData && siteTextData.siteTextsByApp.length < 1);
 
     useEffect(() => {
-        if (params.app_id! && params.site_text_id!) {
-            const appItem = appData?.appItems.filter(
-                (appItem) => appItem.id === +params.app_id!
-            )[0];
+        loadUserInfo();
+        async function loadUserInfo() {
+            const res = await keycloak.loadUserInfo();
+            //@ts-expect-error
+            setUserId(res.preferred_username);
+            // setUserId(res.sub)
+        }
+    }, [keycloak]);
 
-            const siteTextItem = siteTextData?.siteTextsByAppId.filter(
+    useEffect(() => {
+        if (params.app_id! && params.site_text_id! && !siteText) {
+            const appItem = appData?.appItems.find(
+                (appItem) => appItem.id === +params.app_id!
+            );
+
+            const siteTextItem = siteTextData?.siteTextsByApp.find(
                 (siteTextItem) => siteTextItem.id === +params.site_text_id!
-            )[0];
+            );
 
             setApp(appItem);
             setSiteText(siteTextItem);
         }
-    }, [appData?.appItems, params, siteTextData?.siteTextsByAppId]);
+    }, [appData?.appItems, params, siteText, siteTextData?.siteTextsByApp]);
 
-    const iso_639_3_options = useMemo(() => Object.keys(iso_639_3_enum), []);
+    const [createSiteTextTranslation] = useMutation(
+        createSiteTextTranslationMutation
+    );
+    const [createBallotEntry] = useMutation(createBallotEntryMutation);
+    const [createVote] = useMutation(createVoteMutation);
+    const [updateVote] = useMutation(updateVoteMutation);
+
+    useEffect(() => {
+        setVotes(votesData?.votes);
+    }, [votesData, createVote]);
+
+    // Add languages filter (userId)
 
     const handleChange = (iso: string) => {
         if (iso === null) setLanguageId("");
@@ -118,6 +183,18 @@ const SiteTextTranslation: React.FC = () => {
                 },
             },
             update: (cache, result) => {
+                createBallotEntry({
+                    variables: {
+                        input: {
+                            created_by: userId,
+                            election_id: electionId!,
+                            table_name: "ballot_entries",
+                            row: result.data.createSiteTextTranslation
+                                .siteTextTranslation.id,
+                        },
+                    },
+                });
+
                 const cached = cache.readQuery({
                     query: siteTextTranslationsQuery,
                     returnPartialData: true,
@@ -155,9 +232,59 @@ const SiteTextTranslation: React.FC = () => {
         setSiteTextTranslation("");
     };
 
-    const isDisabled =
-        !siteTextData ||
-        (siteTextData && siteTextData.siteTextsByAppId.length < 1);
+    const handleVote = async (up: boolean, id?: number) => {
+        const { data: ballotEntry } = await getBallotEntry({
+            variables: { row: id },
+        });
+        const { data: votesI } = await getVotes({
+            variables: { userId: userId },
+        });
+
+        setVotes(votesI.votes);
+
+        const row: IVote = votesI.votes.find(
+            (vote: IVote) =>
+                vote.ballot_entry.row === id && vote.user_id === userId
+        );
+
+        if (row) {
+            if (row.up === up) return;
+            return updateVote({
+                variables: {
+                    input: {
+                        up: up,
+                        vote_id: row.id,
+                        user_id: userId,
+                    },
+                },
+            });
+        }
+
+        createVote({
+            variables: {
+                input: {
+                    up: up,
+                    user_id: userId,
+                    ballot_entry_id: ballotEntry.ballotEntryByRowId.id!,
+                },
+            },
+            refetchQueries: [votesQuery],
+            update: (cache, result) => {
+                const cached = cache.readQuery({
+                    query: votesQuery,
+                    returnPartialData: true,
+                });
+                cache.writeQuery({
+                    query: votesQuery,
+                    data: {
+                        //@ts-expect-error
+                        ...cached,
+                        votes: [result.data.createVote],
+                    },
+                });
+            },
+        });
+    };
 
     return (
         <IonContent>
@@ -184,6 +311,7 @@ const SiteTextTranslation: React.FC = () => {
                                         appData.appItems.map(
                                             (item: IAppItem) => (
                                                 <IonSelectOption
+                                                    key={item.id}
                                                     id={item.app_name}
                                                     value={item}
                                                 >
@@ -217,7 +345,7 @@ const SiteTextTranslation: React.FC = () => {
                                         value={siteText}
                                     >
                                         {siteTextData &&
-                                            siteTextData.siteTextsByAppId.map(
+                                            siteTextData.siteTextsByApp.map(
                                                 (item: ISiteText) => (
                                                     <IonSelectOption
                                                         key={item.id}
@@ -245,6 +373,9 @@ const SiteTextTranslation: React.FC = () => {
                             name="ISO 693-3 Code"
                             render={() => (
                                 <Autocomplete
+                                    isOptionEqualToValue={(_, value) =>
+                                        value === ""
+                                    }
                                     value={languageId}
                                     disablePortal
                                     id="ISO 693-3 Code"
@@ -300,11 +431,58 @@ const SiteTextTranslation: React.FC = () => {
                     <IonList lines="none">
                         {siteTextTranslationData &&
                             siteTextTranslationData.siteTextTranslations.map(
-                                (item: ISiteTextTranslation) => (
-                                    <IonItem key={item.id}>
-                                        {item.site_text_translation}
-                                    </IonItem>
-                                )
+                                (item: ISiteTextTranslation) => {
+                                    let fill = null;
+                                    if (votesAA?.length) {
+                                        fill = votesAA?.find(
+                                            (vote) =>
+                                                vote.ballot_entry.row ===
+                                                    item.id &&
+                                                vote.user_id === userId
+                                        );
+                                    }
+
+                                    return (
+                                        <IonItem key={item.id}>
+                                            <IonButton
+                                                color={"light"}
+                                                style={{
+                                                    color: "black",
+                                                }}
+                                                fill={
+                                                    fill?.up
+                                                        ? undefined
+                                                        : "default"
+                                                }
+                                                onClick={() => {
+                                                    handleVote(true, item.id);
+                                                }}
+                                            >
+                                                <IonIcon icon={thumbsUpSharp} />
+                                            </IonButton>
+                                            <IonButton
+                                                color={"light"}
+                                                style={{
+                                                    color: "black",
+                                                }}
+                                                fill={
+                                                    fill != null &&
+                                                    fill.up === false
+                                                        ? undefined
+                                                        : "default"
+                                                }
+                                                onClick={() => {
+                                                    handleVote(false, item.id);
+                                                }}
+                                            >
+                                                <IonIcon
+                                                    icon={thumbsDownSharp}
+                                                />
+                                            </IonButton>
+                                            {item.site_text_translation}
+                                        </IonItem>
+                                    );
+                                }
                             )}
                     </IonList>
                 </div>

@@ -28,6 +28,48 @@ export type AppItemOutput = {
   appItem: AppItem;
 };
 
+export type BallotEntry = {
+  __typename?: 'BallotEntry';
+  created_by: Scalars['String'];
+  election_id: Scalars['Int'];
+  id: Scalars['Int'];
+  row: Scalars['Int'];
+  table_name: Scalars['String'];
+};
+
+export type BallotEntryInput = {
+  created_by: Scalars['String'];
+  election_id: Scalars['Int'];
+  row: Scalars['Int'];
+  table_name: Scalars['String'];
+};
+
+export type BallotEntryOutput = {
+  __typename?: 'BallotEntryOutput';
+  ballotEntry: BallotEntry;
+};
+
+export type Election = {
+  __typename?: 'Election';
+  app_id: Scalars['Int'];
+  created_by: Scalars['String'];
+  id: Scalars['Int'];
+  name: Scalars['String'];
+  row: Scalars['Int'];
+  table_name: Scalars['String'];
+};
+
+export type ElectionInput = {
+  app_id: Scalars['Int'];
+  created_by: Scalars['String'];
+  name: Scalars['String'];
+};
+
+export type ElectionOutput = {
+  __typename?: 'ElectionOutput';
+  election: Election;
+};
+
 export type LanguageProficiency = {
   __typename?: 'LanguageProficiency';
   id: Scalars['Int'];
@@ -104,17 +146,57 @@ export type SiteTextTranslationOutput = {
   siteTextTranslation: SiteTextTranslation;
 };
 
+export type UpdateVote = {
+  up: Scalars['Boolean'];
+  user_id: Scalars['String'];
+  vote_id: Scalars['Int'];
+};
+
+export type Vote = {
+  __typename?: 'Vote';
+  ballot_entry: BallotEntry;
+  ballot_entry_id: Scalars['Int'];
+  id: Scalars['Int'];
+  up: Scalars['Boolean'];
+  user_id: Scalars['String'];
+};
+
+export type VoteInput = {
+  ballot_entry_id: Scalars['Int'];
+  up: Scalars['Boolean'];
+  user_id: Scalars['String'];
+};
+
+export type VoteOutput = {
+  __typename?: 'VoteOutput';
+  vote: Vote;
+};
+
 export type Mutation_Root = {
   __typename?: 'mutation_root';
   createAppItem: AppItemOutput;
+  createBallotEntry: BallotEntryOutput;
+  createElection: ElectionOutput;
   createLanguageProficiency: LanguageProficiencyOutput;
   createSiteText: SiteTextOutput;
   createSiteTextTranslation: SiteTextTranslationOutput;
+  createVote: VoteOutput;
+  updateVote: Scalars['Boolean'];
 };
 
 
 export type Mutation_RootCreateAppItemArgs = {
   input: AppItemInput;
+};
+
+
+export type Mutation_RootCreateBallotEntryArgs = {
+  input: BallotEntryInput;
+};
+
+
+export type Mutation_RootCreateElectionArgs = {
+  input: ElectionInput;
 };
 
 
@@ -132,16 +214,30 @@ export type Mutation_RootCreateSiteTextTranslationArgs = {
   input: SiteTextTranslationInput;
 };
 
+
+export type Mutation_RootCreateVoteArgs = {
+  input: VoteInput;
+};
+
+
+export type Mutation_RootUpdateVoteArgs = {
+  input: UpdateVote;
+};
+
 export type Query_Root = {
   __typename?: 'query_root';
-  /** fetch apps */
   appItems: Array<AppItem>;
-  /** fetch language profiencies */
+  ballotEntryByRowId: BallotEntry;
+  electionByTableName: Election;
   languageProficiencies: Array<LanguageProficiency>;
-  /** fetch site text translations */
   siteTextTranslations: Array<SiteTextTranslation>;
-  /** fetch site texts */
   siteTexts: Array<SiteText>;
+  votes: Array<Vote>;
+};
+
+
+export type Query_RootVotesArgs = {
+  user_id?: InputMaybe<Scalars['String']>;
 };
 
 

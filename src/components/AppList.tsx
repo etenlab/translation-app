@@ -16,13 +16,11 @@ export interface IAppItem {
     app_name: string;
 }
 
-const AppList: React.FC = () => {
+const AppList = () => {
     const [present] = useIonToast();
     const { control, handleSubmit } = useForm();
     const [appName, setAppName] = useState<string>("");
     const { data } = useQuery(appItemsQuery);
-
-    console.log("data?? ", data);
 
     const appData = useMemo(() => data, [data]);
     const [createAppItem] = useMutation(createAppItemMutation);
@@ -94,7 +92,7 @@ const AppList: React.FC = () => {
                     <IonList lines="none">
                         {appData &&
                             appData.appItems.map((item: IAppItem) => (
-                                <IonItem>{item.app_name}</IonItem>
+                                <IonItem key={item.id}>{item.app_name}</IonItem>
                             ))}
                     </IonList>
                 </div>

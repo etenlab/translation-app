@@ -14,11 +14,13 @@ import {
     appItemsQuery,
     siteTextsQuery,
     createSiteTextMutation,
+    createElectionMutation,
 } from "../common/queries";
 import { useMutation, useQuery } from "@apollo/client";
 import { useMemo, useState } from "react";
 import { IAppItem } from "./AppList";
 import { useHistory } from "react-router-dom";
+import { useKeycloak } from "@react-keycloak/web";
 
 export interface ISiteText {
     id: number;
@@ -29,7 +31,7 @@ export interface ISiteText {
     language_table: string;
 }
 
-const SiteText: React.FC = () => {
+const SiteText = () => {
     const [present] = useIonToast();
     const { control, handleSubmit } = useForm();
     const [app, setApp] = useState<IAppItem | undefined>(undefined);
@@ -38,6 +40,7 @@ const SiteText: React.FC = () => {
     const appItemsRequest = useQuery(appItemsQuery);
     const { data } = useQuery(siteTextsQuery);
     const [createSiteText] = useMutation(createSiteTextMutation);
+    const [createElection] = useMutation(createElectionMutation);
 
     const appData: { appItems: IAppItem[] } = useMemo(
         () => appItemsRequest.data,
@@ -50,6 +53,7 @@ const SiteText: React.FC = () => {
     );
 
     const history = useHistory();
+    const { keycloak } = useKeycloak();
 
     const handleSubmitForm = () => {
         createSiteText({
@@ -63,6 +67,17 @@ const SiteText: React.FC = () => {
                 },
             },
             update: (cache, result) => {
+                createElection({
+                    variables: {
+                        input: {
+                            app_id: app?.id,
+                            name: siteText,
+                            created_by: keycloak.clientId,
+                            table_name: "site_text_keys",
+                            row: result.data.createSiteText.siteText.id,
+                        },
+                    },
+                });
                 const cached = cache.readQuery({
                     query: siteTextsQuery,
                     returnPartialData: true,
@@ -88,6 +103,7 @@ const SiteText: React.FC = () => {
                 });
             },
         });
+
         setApp(undefined);
         setSiteText("");
         setSiteTextDescription("");

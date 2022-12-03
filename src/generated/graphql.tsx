@@ -181,6 +181,7 @@ export type Mutation_Root = {
   createSiteText: SiteTextOutput;
   createSiteTextTranslation: SiteTextTranslationOutput;
   createVote: VoteOutput;
+  updateSiteText: SiteTextOutput;
   updateVote: Scalars['Boolean'];
 };
 
@@ -226,13 +227,26 @@ export type Mutation_RootUpdateVoteArgs = {
 
 export type Query_Root = {
   __typename?: 'query_root';
+  appItem: AppItem;
   appItems: Array<AppItem>;
   ballotEntryByRowId: BallotEntry;
   electionByTableName: Election;
   languageProficiencies: Array<LanguageProficiency>;
+  languageProfienciesByUserId: Array<LanguageProficiency>;
+  siteText: SiteText;
   siteTextTranslations: Array<SiteTextTranslation>;
   siteTexts: Array<SiteText>;
   votes: Array<Vote>;
+};
+
+
+export type Query_RootAppItemArgs = {
+  id: Scalars['Float'];
+};
+
+
+export type Query_RootLanguageProfienciesByUserIdArgs = {
+  user_id?: InputMaybe<Scalars['String']>;
 };
 
 

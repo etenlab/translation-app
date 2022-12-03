@@ -1,15 +1,10 @@
-import {
-    IonButton,
-    IonContent,
-    IonInput,
-    IonItem,
-    IonList,
-    useIonToast,
-} from "@ionic/react";
-import { Controller, useForm } from "react-hook-form";
-import { appItemsQuery, createAppItemMutation } from "../common/queries";
-import { useMutation, useQuery } from "@apollo/client";
-import { useMemo, useState } from "react";
+import { IonContent, IonItem, IonList, IonText } from "@ionic/react";
+import { appItemsQuery } from "../common/queries";
+import { useQuery } from "@apollo/client";
+import { useMemo } from "react";
+import Title from "../common/Title";
+import { useHistory } from "react-router";
+import Button from "../common/Button";
 
 export interface IAppItem {
     id: number;
@@ -17,82 +12,45 @@ export interface IAppItem {
 }
 
 const AppList = () => {
-    const [present] = useIonToast();
-    const { control, handleSubmit } = useForm();
-    const [appName, setAppName] = useState<string>("");
+    const history = useHistory();
     const { data } = useQuery(appItemsQuery);
-
     const appData = useMemo(() => data, [data]);
-    const [createAppItem] = useMutation(createAppItemMutation);
-
-    const handleSubmitForm = () => {
-        createAppItem({
-            variables: { input: { app_name: appName } },
-            update: (cache, result) => {
-                const cached = cache.readQuery({
-                    query: appItemsQuery,
-                    returnPartialData: true,
-                });
-                cache.writeQuery({
-                    query: appItemsQuery,
-                    data: {
-                        //@ts-expect-error
-                        ...cached,
-                        appItems: [
-                            //@ts-expect-error
-                            ...cached.appItems,
-                            result.data.createAppItem,
-                        ],
-                    },
-                });
-            },
-            onError: (e) => {
-                present({
-                    message: e.message,
-                    duration: 1500,
-                    color: "danger",
-                });
-            },
-        });
-        setAppName("");
-    };
 
     return (
         <IonContent>
-            <div style={{ padding: "60px 20px 60px 20px" }}>
-                <h3 style={{ color: "cornflowerblue" }}>App List</h3>
-                <div>
-                    <form onSubmit={handleSubmit(handleSubmitForm)}>
-                        <div style={{ display: "flex" }}>
-                            <Controller
-                                control={control}
-                                name="appName"
-                                render={() => (
-                                    <IonInput
-                                        placeholder="New App Name"
-                                        style={{ border: "1px solid gray" }}
-                                        onIonChange={(e) => {
-                                            //@ts-expect-error
-                                            setAppName(e.target.value);
-                                        }}
-                                        value={appName}
-                                    />
-                                )}
-                            />
-
-                            <IonButton
-                                fill="outline"
-                                type="submit"
-                                disabled={!appName}
-                            >
-                                Submit
-                            </IonButton>
-                        </div>
-                    </form>
-                    <IonList lines="none">
+            <div style={{ padding: "60px 20px 60px 20px", marginTop: "20px" }}>
+                <div
+                    style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                    }}
+                >
+                    <Title title="Applications" />
+                    <Button
+                        label="Add New +"
+                        link="/translation-app/create-app"
+                    />
+                </div>
+                <div style={{ marginTop: "30px" }}>
+                    <IonText className="font-subtitle">
+                        List of Applications
+                    </IonText>
+                    <IonList style={{ marginLeft: "-16px" }}>
                         {appData &&
                             appData.appItems.map((item: IAppItem) => (
-                                <IonItem key={item.id}>{item.app_name}</IonItem>
+                                <IonItem
+                                    key={item.id}
+                                    style={{ cursor: "pointer" }}
+                                    onClick={() =>
+                                        history.push({
+                                            pathname: `/translation-app/apps`,
+                                            search: `app_id=${item.id}`,
+                                        })
+                                    }
+                                >
+                                    {item.app_name}
+                                </IonItem>
                             ))}
                     </IonList>
                 </div>

@@ -9,12 +9,32 @@ export const appItemsQuery = gql`
     }
 `;
 
+export const appItemQuery = gql`
+    query AppItem($appItemId: Float!) @api(name: site_text) {
+        appItem(id: $appItemId) {
+            app_name
+            id
+        }
+    }
+`;
+
 export const createAppItemMutation = gql`
     mutation createAppItem($input: AppItemInput!) @api(name: site_text) {
         createAppItem(input: $input) {
             appItem {
                 id
             }
+        }
+    }
+`;
+
+export const siteTextQuery = gql`
+    query SiteText($siteTextId: Float!) @api(name: site_text) {
+        siteText(id: $siteTextId) {
+            app
+            description
+            id
+            site_text_key
         }
     }
 `;
@@ -42,6 +62,21 @@ export const createSiteTextMutation = gql`
         }
     }
 `;
+
+export const updateSiteTextMutation = gql`
+    mutation UpdateSiteText($input: UpdateSiteTextInput!)
+    @api(name: site_text) {
+        updateSiteText(input: $input) {
+            siteText {
+                app
+                description
+                id
+                site_text_key
+            }
+        }
+    }
+`;
+
 export const siteTextsByAppIdQuery = gql`
     query SiteTextsByApp($siteTextsByAppId: Float!) @api(name: site_text) {
         siteTextsByApp(id: $siteTextsByAppId) {
@@ -107,6 +142,19 @@ export const createLanguageProficiencyMutation = gql`
                 user_id
                 skill_level
             }
+        }
+    }
+`;
+
+export const languageProficienciesByUserIdQuery = gql`
+    query LanguageProfienciesByUserId($userId: String!) @api(name: site_text) {
+        languageProfienciesByUserId(user_id: $userId) {
+            id
+            language_id
+            language_table
+            ref_name
+            skill_level
+            user_id
         }
     }
 `;

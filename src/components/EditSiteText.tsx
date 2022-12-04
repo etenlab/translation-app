@@ -65,7 +65,7 @@ const EditSiteText = () => {
             <div style={{ padding: "60px 20px 60px 20px" }}>
                 <Title title="Edit Site Text" />
                 <form onSubmit={handleSubmit(handleSubmitForm)}>
-                    <div style={{ width: "90%" }}>
+                    <div>
                         <Controller
                             control={control}
                             name="siteText"
@@ -89,7 +89,7 @@ const EditSiteText = () => {
                     </div>
 
                     <div style={{ padding: "20px 0px 0px 0px" }}>
-                        <div style={{ width: "90%" }}>
+                        <div>
                             <Controller
                                 control={control}
                                 name="siteTextDescription"
@@ -118,7 +118,6 @@ const EditSiteText = () => {
                         style={{
                             paddingTop: "10px",
                             display: "flex",
-                            width: "90%",
                             justifyContent: "space-evenly",
                         }}
                     >

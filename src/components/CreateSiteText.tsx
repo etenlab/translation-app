@@ -82,9 +82,9 @@ const CreateSiteText = () => {
                 <IonText className="font-subtitle">{params.app_name}</IonText>
                 <Title title="Add New Site Text" />
             </div>
-            <div style={{ padding: "0px 0px 0px 20px" }}>
+            <div style={{ padding: "0px 20px 0px 20px" }}>
                 <form onSubmit={handleSubmit(handleSubmitForm)}>
-                    <div style={{ width: "90%" }}>
+                    <div>
                         <Controller
                             control={control}
                             name="siteText"
@@ -108,7 +108,7 @@ const CreateSiteText = () => {
                     </div>
 
                     <div style={{ padding: "20px 0px 0px 0px" }}>
-                        <div style={{ width: "90%" }}>
+                        <div>
                             <Controller
                                 control={control}
                                 name="siteText"
@@ -137,7 +137,6 @@ const CreateSiteText = () => {
                         style={{
                             paddingTop: "10px",
                             display: "flex",
-                            width: "90%",
                             justifyContent: "space-evenly",
                         }}
                     >

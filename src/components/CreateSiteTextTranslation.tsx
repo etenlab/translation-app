@@ -172,13 +172,11 @@ const CreateSiteTextTranslation = () => {
                 </div>
                 <form onSubmit={handleSubmit(handleSubmitForm)}>
                     <div style={{ padding: "20px 0px 0px 0px" }}>
-                        <div style={{ width: "90%", paddingBottom: "20px" }}>
+                        <div style={{ paddingBottom: "20px" }}>
                             <Controller
                                 control={control}
                                 name="ISO 693-3 Code"
                                 render={() => (
-                                    // maybe changing this select to a modal would
-                                    // fix the iontextarea glitch
                                     <IonSelect
                                         className="custom"
                                         placeholder="Choose Language"
@@ -208,7 +206,7 @@ const CreateSiteTextTranslation = () => {
                             />
                         </div>
 
-                        <div style={{ width: "90%" }}>
+                        <div>
                             <Controller
                                 control={control}
                                 name="siteTextTranslation"
@@ -233,7 +231,7 @@ const CreateSiteTextTranslation = () => {
                         </div>
 
                         {/* add description to api */}
-                        <div style={{ width: "90%", paddingTop: "20px" }}>
+                        <div style={{ paddingTop: "20px" }}>
                             <Controller
                                 control={control}
                                 name="translation Description"
@@ -262,7 +260,6 @@ const CreateSiteTextTranslation = () => {
                             style={{
                                 paddingTop: "10px",
                                 display: "flex",
-                                width: "90%",
                                 justifyContent: "space-evenly",
                             }}
                         >

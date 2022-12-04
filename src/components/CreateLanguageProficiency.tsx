@@ -161,7 +161,6 @@ const CreateLanguageProficiency = () => {
                             style={{
                                 paddingTop: "10px",
                                 display: "flex",
-                                width: "90%",
                                 justifyContent: "space-evenly",
                             }}
                         >

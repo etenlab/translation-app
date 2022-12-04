@@ -35,9 +35,9 @@ const CreateApplication = () => {
             <div style={{ padding: "60px 20px 20px 20px" }}>
                 <Title title="Add New Application" />
             </div>
-            <div style={{ padding: "0px 0px 0px 20px" }}>
+            <div style={{ padding: "0px 20px 0px 20px" }}>
                 <form onSubmit={handleSubmit(handleSubmitForm)}>
-                    <div style={{ width: "90%" }}>
+                    <div>
                         <Controller
                             control={control}
                             name="appName"
@@ -63,7 +63,6 @@ const CreateApplication = () => {
                         style={{
                             paddingTop: "10px",
                             display: "flex",
-                            width: "90%",
                             justifyContent: "space-evenly",
                         }}
                     >

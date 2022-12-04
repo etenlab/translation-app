@@ -45,7 +45,7 @@ export interface ISiteTextTranslation {
 export interface IBallotEntry {
     id: number;
     row: number;
-    table_name: number;
+    table_name: string;
     created_by: string;
     election_id: string;
 }
@@ -188,7 +188,7 @@ const SiteTextTranslation = () => {
                         input: {
                             created_by: userId,
                             election_id: electionId!,
-                            table_name: "ballot_entries",
+                            table_name: "site_text_translations",
                             row: result.data.createSiteTextTranslation
                                 .siteTextTranslation.id,
                         },

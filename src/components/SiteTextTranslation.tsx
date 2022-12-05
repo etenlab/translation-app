@@ -188,7 +188,7 @@ const SiteTextTranslation = () => {
                         input: {
                             created_by: userId,
                             election_id: electionId!,
-                            table_name: "ballot_entries",
+                            table_name: "site_text_translations",
                             row: result.data.createSiteTextTranslation
                                 .siteTextTranslation.id,
                         },

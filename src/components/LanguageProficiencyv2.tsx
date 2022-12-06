@@ -10,11 +10,12 @@ import {
     IonText,
 } from "@ionic/react";
 import { arrowBack } from "ionicons/icons";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useHistory } from "react-router";
 import Button from "../common/Button";
 import { iso_639_3_enum } from "../common/iso_639_3_enum";
-import { languageProficienciesQuery } from "../common/queries";
+import { languageProficienciesByUserIdQuery } from "../common/queries";
+import { useKeycloak } from "@react-keycloak/web";
 import Title from "../common/Title";
 
 export interface ILanguageProficiency {
@@ -36,11 +37,27 @@ export const skillLevelEnum: Record<string, number> = {
 
 const LanguageProficiencyv2 = () => {
     const history = useHistory();
+    const [userId, setUserId] = useState<string>("");
+    const { keycloak } = useKeycloak();
 
-    const { data } = useQuery(languageProficienciesQuery);
+    useEffect(() => {
+        loadUserInfo();
+        async function loadUserInfo() {
+            const res = await keycloak.loadUserInfo();
+            //@ts-expect-error
+            setUserId(res.preferred_username);
+            // setUserId(res.sub)
+        }
+    }, [keycloak]);
+
+    const { data } = useQuery(languageProficienciesByUserIdQuery, {
+        variables: {
+            userId,
+        },
+    });
+
 
     const skillLevelOptions = useMemo(() => skillLevelEnum, []);
-
     const iso_639_3_options = useMemo(() => Object.keys(iso_639_3_enum), []);
 
     return (
@@ -66,13 +83,13 @@ const LanguageProficiencyv2 = () => {
                 </div>
                 <IonList>
                     {data &&
-                        data.languageProficiencies.map(
+                        data.languageProfienciesByUserId.map(
                             (item: ILanguageProficiency) => {
                                 const itemKey = item.skill_level
                                     .split(/(?=[A-Z])/)
                                     .join(" ");
                                 return (
-                                    <IonItem>
+                                    <IonItem key={itemKey}>
                                         <IonGrid>
                                             <IonRow>
                                                 <IonCol>

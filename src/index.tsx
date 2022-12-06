@@ -19,7 +19,7 @@ const client = new ApolloClient({
         new MultiAPILink({
             endpoints: {
                 site_text: "http://localhost:3001",
-                voting: "http://localhost:3002",
+                voting: "http://localhost:8210",
             },
             createHttpLink: () => createHttpLink(),
         }),

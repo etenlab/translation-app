@@ -11,7 +11,10 @@ import { Controller, useForm } from "react-hook-form";
 import { useHistory } from "react-router";
 import Button from "../common/Button";
 import { iso_639_3_enum } from "../common/iso_639_3_enum";
-import { createLanguageProficiencyMutation, languageProficienciesQuery } from "../common/queries";
+import {
+    createLanguageProficiencyMutation,
+    languageProficienciesByUserIdQuery,
+} from "../common/queries";
 import Title from "../common/Title";
 import { skillLevelEnum } from "./LanguageProficiencyv2";
 
@@ -29,7 +32,11 @@ const CreateLanguageProficiency = () => {
         createLanguageProficiencyMutation
     );
 
-    const iso_639_3_options = useMemo(() => Object.values(iso_639_3_enum), []);
+    //this is a temporal fix to avoid render all possible options
+    const iso_639_3_options = useMemo(
+        () => Object.values(iso_639_3_enum).slice(0, 50),
+        []
+    );
 
     useEffect(() => {
         loadUserInfo();
@@ -52,30 +59,32 @@ const CreateLanguageProficiency = () => {
                 },
             },
             update: (cache, result) => {
-              const cached = cache.readQuery({
-                  query: languageProficienciesQuery,
-                  returnPartialData: true,
-              });
-              cache.writeQuery({
-                  query: languageProficienciesQuery,
-                  data: {
-                      //@ts-expect-error
-                      ...cached,
-                      languageProficiencies: [
-                          //@ts-expect-error
-                          ...cached.languageProficiencies,
-                          result.data.createLanguageProficiency,
-                      ],
-                  },
-              });
-          },
+                const cached = cache.readQuery({
+                    query: languageProficienciesByUserIdQuery,
+                    variables: { userId },
+                    returnPartialData: true,
+                });
+                cache.writeQuery({
+                    query: languageProficienciesByUserIdQuery,
+                    variables: { userId },
+                    data: {
+                        //@ts-expect-error
+                        ...cached,
+                        languageProfienciesByUserId: [
+                            //@ts-expect-error
+                            ...cached.languageProfienciesByUserId,
+                            result.data.createLanguageProficiency,
+                        ],
+                    },
+                });
+            },
             onCompleted: () => {
-              present({
-                  message: "Language proficiency created successfully",
-                  duration: 1500,
-                  color: "success",
-              });
-          },
+                present({
+                    message: "Language proficiency created successfully",
+                    duration: 1500,
+                    color: "success",
+                });
+            },
             onError: (e) => {
                 present({
                     message: e.message,
@@ -119,7 +128,7 @@ const CreateLanguageProficiency = () => {
                                     value={iso_639_3_enum[languageId!]}
                                 >
                                     {iso_639_3_options.map((option) => (
-                                        <IonSelectOption>
+                                        <IonSelectOption key={option}>
                                             {option}
                                         </IonSelectOption>
                                     ))}

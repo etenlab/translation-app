@@ -45,10 +45,9 @@ const CreateSiteTextTranslation = () => {
     const [userId, setUserId] = useState<string>("");
     const [languageId, setLanguageId] = useState<string | undefined>(undefined);
     const [siteTextTranslation, setSiteTextTranslation] = useState<string>("");
-    const [translationDescription, setTranslationDescription] = useState<
+    const [descriptionTranslation, setDescriptionTranslation] = useState<
         string | undefined
     >(undefined);
-
     const [iso6393Options, setIso6393Options] = useState<string[]>([]);
 
     const { data: languageProficiencies } = useQuery(
@@ -100,7 +99,7 @@ const CreateSiteTextTranslation = () => {
                     language_id: languageId,
                     language_table: "iso_639_3",
                     user_id: userId,
-                    //add description to api
+                    description_translation: descriptionTranslation,
                 },
             },
             onCompleted: () => {
@@ -110,7 +109,7 @@ const CreateSiteTextTranslation = () => {
                     color: "success",
                 });
                 setSiteTextTranslation("");
-                setTranslationDescription(undefined);
+                setDescriptionTranslation(undefined);
                 setLanguageId("");
             },
             onError: (e: { message: any }) => {
@@ -230,7 +229,6 @@ const CreateSiteTextTranslation = () => {
                             />
                         </div>
 
-                        {/* add description to api */}
                         <div style={{ paddingTop: "20px" }}>
                             <Controller
                                 control={control}
@@ -245,12 +243,12 @@ const CreateSiteTextTranslation = () => {
                                             borderRadius: "10px",
                                         }}
                                         onIonChange={(e) => {
-                                            setTranslationDescription(
+                                            setDescriptionTranslation(
                                                 e.target
                                                     .value as unknown as string
                                             );
                                         }}
-                                        value={translationDescription}
+                                        value={descriptionTranslation}
                                     />
                                 )}
                             />

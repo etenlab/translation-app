@@ -36,12 +36,27 @@ ion-button {
     --border-radius: 10px;
 }
 
-ion-input.custom {
+.native-input {
     --padding-end: 15px;
     --padding-start: 15px;
 }
 
-ion-textarea.custom {
+ion-input {
+    border: 1px solid gray;
+    border-radius: 10px;
+}
+
+textarea {
     --padding-start: 15px;
-    --padding-end: 15px;
+    --padding-end: 0px;
+}
+
+ion-item.form::part(native) {
+    --padding-start: 0px;
+    --inner-padding-end: 0px;
+}
+
+ion-textarea {
+    border: 1px solid gray;
+    border-radius: 10px;
 }

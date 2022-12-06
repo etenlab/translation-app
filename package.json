@@ -12,6 +12,7 @@
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
     "@habx/apollo-multi-endpoint-link": "^2.8.0",
+    "@hookform/resolvers": "^2.9.10",
     "@ionic/react": "^6.0.0",
     "@ionic/react-router": "^6.0.0",
     "@mui/material": "^5.10.10",
@@ -47,7 +48,8 @@
     "workbox-range-requests": "^5.1.4",
     "workbox-routing": "^5.1.4",
     "workbox-strategies": "^5.1.4",
-    "workbox-streams": "^5.1.4"
+    "workbox-streams": "^5.1.4",
+    "yup": "^0.32.11"
   },
   "scripts": {
     "start": "react-scripts start",

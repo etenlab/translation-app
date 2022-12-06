@@ -23,6 +23,12 @@ import { useEffect, useState } from "react";
 import Button from "../common/Button";
 import { iso_639_3_enum } from "../common/iso_639_3_enum";
 import { useKeycloak } from "@react-keycloak/web";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { object, string } from "yup";
+
+const schema = object().shape({
+    site_text_translation: string().min(5).max(20).required(),
+});
 
 export interface ILanguageProficiency {
     id: number;

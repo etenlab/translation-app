@@ -120,7 +120,7 @@ const Application = () => {
                             }
                         />
                     </div>
-                    <IonList style={{ marginLeft: "-21px", marginTop: "5px" }}>
+                    <IonList style={{ marginLeft: "-12px", marginTop: "5px" }}>
                         <IonSearchbar
                             placeholder="Find Site Text"
                             debounce={1000}

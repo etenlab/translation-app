@@ -39,12 +39,8 @@ const SiteTextv2 = () => {
                     }}
                 >
                     <IonIcon
+                        className="back"
                         icon={arrowBack}
-                        style={{
-                            fontSize: "18px",
-                            padding: "9px 10px 0px 0px",
-                            cursor: "pointer",
-                        }}
                         onClick={() =>
                             history.push(
                                 `/translation-app/apps?app_id=${data?.siteText.app}`
@@ -56,13 +52,7 @@ const SiteTextv2 = () => {
                 <IonText className="font-description">
                     {data?.siteText.description}
                 </IonText>
-                <div
-                    style={{
-                        paddingTop: "10px",
-                        display: "flex",
-                        justifyContent: "space-evenly",
-                    }}
-                >
+                <div className="button-container">
                     <Button
                         label="Edit Site Text"
                         color="light"

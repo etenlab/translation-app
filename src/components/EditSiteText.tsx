@@ -1,22 +1,42 @@
-import { IonContent, IonInput, IonTextarea, useIonToast } from "@ionic/react";
+import {
+    IonContent,
+    IonInput,
+    IonItem,
+    IonNote,
+    IonTextarea,
+    useIonToast,
+} from "@ionic/react";
 import { useHistory, useLocation } from "react-router";
 import Button from "../common/Button";
 import Title from "../common/Title";
 import queryString from "query-string";
 import { Controller, useForm } from "react-hook-form";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useMutation, useQuery } from "@apollo/client";
 import { siteTextQuery, updateSiteTextMutation } from "../common/queries";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { object, string } from "yup";
+import { ISiteTextForm } from "./CreateSiteText";
+
+const schema = object().shape({
+    site_text_key: string().min(5).max(256).required(),
+    description: string().min(5).max(256).required(),
+});
 
 const EditSiteText = () => {
-    const { control, handleSubmit } = useForm();
+    const {
+        control,
+        handleSubmit,
+        formState: { errors },
+        setValue,
+    } = useForm<ISiteTextForm>({
+        resolver: yupResolver(schema),
+    });
+
     const [present] = useIonToast();
     const history = useHistory();
     const { search } = useLocation();
     const params = queryString.parse(search);
-
-    const [siteText, setSiteText] = useState<string>("");
-    const [siteTextDescription, setSiteTextDescription] = useState<string>("");
 
     const [updateSiteText] = useMutation(updateSiteTextMutation);
 
@@ -29,17 +49,16 @@ const EditSiteText = () => {
 
     useEffect(() => {
         if (data) {
-            setSiteText(data?.siteText.site_text_key);
-            setSiteTextDescription(data?.siteText.description);
+            setValue("site_text_key", data?.siteText.site_text_key);
+            setValue("description", data?.siteText.description);
         }
-    }, [data]);
+    }, [data, setValue]);
 
-    const handleSubmitForm = () => {
+    const handleSubmitForm = (siteTextForm: ISiteTextForm) => {
         updateSiteText({
             variables: {
                 input: {
-                    description: siteTextDescription,
-                    site_text_key: siteText,
+                    ...siteTextForm,
                     site_text_id: +params.site_text_id!,
                 },
             },
@@ -68,22 +87,25 @@ const EditSiteText = () => {
                     <div>
                         <Controller
                             control={control}
-                            name="siteText"
-                            render={() => (
-                                <IonInput
-                                    className="custom"
-                                    placeholder="New Site Text"
-                                    style={{
-                                        border: "1px solid gray",
-                                        borderRadius: "10px",
-                                    }}
-                                    onIonChange={(e) => {
-                                        setSiteText(
-                                            e.target.value as unknown as string
-                                        );
-                                    }}
-                                    value={siteText}
-                                />
+                            name="site_text_key"
+                            render={({ field: { onChange, value } }) => (
+                                <IonItem
+                                    lines="none"
+                                    className={`form ${
+                                        "site_text_key" in errors
+                                            ? "ion-invalid"
+                                            : "ion-valid"
+                                    }`}
+                                >
+                                    <IonInput
+                                        placeholder="New Site Text"
+                                        onIonChange={onChange}
+                                        value={value}
+                                    />
+                                    <IonNote slot="error">
+                                        {errors.site_text_key?.message}
+                                    </IonNote>
+                                </IonItem>
                             )}
                         />
                     </div>
@@ -92,35 +114,32 @@ const EditSiteText = () => {
                         <div>
                             <Controller
                                 control={control}
-                                name="siteTextDescription"
-                                render={() => (
-                                    <IonTextarea
-                                        className="custom"
-                                        rows={5}
-                                        placeholder="Description"
-                                        style={{
-                                            border: "1px solid gray",
-                                            borderRadius: "10px",
-                                        }}
-                                        onIonChange={(e) => {
-                                            setSiteTextDescription(
-                                                e.target
-                                                    .value as unknown as string
-                                            );
-                                        }}
-                                        value={siteTextDescription}
-                                    />
+                                name="description"
+                                render={({ field: { onChange, value } }) => (
+                                    <IonItem
+                                        lines="none"
+                                        className={`form ${
+                                            "description" in errors
+                                                ? "ion-invalid"
+                                                : "ion-valid"
+                                        }`}
+                                    >
+                                        <IonTextarea
+                                            autoGrow
+                                            rows={5}
+                                            placeholder="Description"
+                                            onIonChange={onChange}
+                                            value={value}
+                                        />
+                                        <IonNote slot="error">
+                                            {errors.description?.message}
+                                        </IonNote>
+                                    </IonItem>
                                 )}
                             />
                         </div>
                     </div>
-                    <div
-                        style={{
-                            paddingTop: "10px",
-                            display: "flex",
-                            justifyContent: "space-evenly",
-                        }}
-                    >
+                    <div className="button-container"> 
                         <Button
                             label="Cancel"
                             color="light"

@@ -32,13 +32,25 @@
     font-size: 16px;
 }
 
-ion-button {
-    --border-radius: 10px;
+.font-language {
+    font-family: "Inter", sans-serif;
+    font-weight: 400;
+    font-size: 14px;
 }
 
 .native-input {
     --padding-end: 15px;
     --padding-start: 15px;
+}
+
+.button-container {
+    padding-top: 10px;
+    display: flex;
+    justify-content: space-evenly;
+}
+
+ion-button {
+    --border-radius: 10px;
 }
 
 ion-input {
@@ -59,4 +71,17 @@ ion-item.form::part(native) {
 ion-textarea {
     border: 1px solid gray;
     border-radius: 10px;
+}
+
+ion-select {
+    padding-left: 10px;
+    border: 1px solid gray;
+    border-radius: 10px;
+    width: 100%;
+}
+
+ion-icon.back {
+    font-size: 18px;
+    padding: 9px 10px 0px 0px;
+    cursor: pointer;
 }

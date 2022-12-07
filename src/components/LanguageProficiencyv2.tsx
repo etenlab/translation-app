@@ -56,7 +56,6 @@ const LanguageProficiencyv2 = () => {
         },
     });
 
-
     const skillLevelOptions = useMemo(() => skillLevelEnum, []);
     const iso_639_3_options = useMemo(() => Object.keys(iso_639_3_enum), []);
 
@@ -71,12 +70,8 @@ const LanguageProficiencyv2 = () => {
                     }}
                 >
                     <IonIcon
+                        className="back"
                         icon={arrowBack}
-                        style={{
-                            fontSize: "18px",
-                            padding: "9px 10px 0px 0px",
-                            cursor: "pointer",
-                        }}
                         onClick={() => history.push(`/translation-app/`)}
                     />
                     <Title title="Language Proficiency" />
@@ -92,8 +87,37 @@ const LanguageProficiencyv2 = () => {
                                     <IonItem key={itemKey}>
                                         <IonGrid>
                                             <IonRow>
-                                                <IonCol>
-                                                    <IonText className="font-description">
+                                                <IonCol
+                                                    size="5"
+                                                    style={{
+                                                        // whiteSpace: "nowrap",
+                                                        display: "flex",
+                                                        flexDirection: "row",
+                                                        alignItems: "center",
+                                                        overflow: "hidden",
+                                                        textOverflow: "elipsis",
+                                                    }}
+                                                >
+                                                    <IonText className="font-language">
+                                                        {item.ref_name}
+                                                    </IonText>
+                                                </IonCol>
+                                                <IonCol
+                                                    size="3"
+                                                    style={{
+                                                        display: "flex",
+                                                        flexDirection: "row",
+                                                        alignItems: "center",
+                                                    }}
+                                                >
+                                                    <IonText
+                                                        className="font-language"
+                                                        style={{
+                                                            opacity: 0.5,
+                                                            alignItems:
+                                                                "center",
+                                                        }}
+                                                    >
                                                         {iso_639_3_options.find(
                                                             (key) =>
                                                                 iso_639_3_enum[
@@ -103,24 +127,18 @@ const LanguageProficiencyv2 = () => {
                                                         )}
                                                     </IonText>
                                                 </IonCol>
+
                                                 <IonCol
+                                                    size="4"
                                                     style={{
                                                         whiteSpace: "nowrap",
+                                                        display: "flex",
+                                                        flexDirection: "row",
+                                                        alignItems: "center",
+                                                        justifyContent: "end",
                                                     }}
                                                 >
-                                                    <IonText
-                                                        className="font-description"
-                                                        style={{ opacity: 0.5 }}
-                                                    >
-                                                        {item.ref_name}
-                                                    </IonText>
-                                                </IonCol>
-                                                <IonCol
-                                                    style={{
-                                                        whiteSpace: "nowrap",
-                                                    }}
-                                                >
-                                                    <IonText className="font-description">
+                                                    <IonText className="font-language">
                                                         {
                                                             skillLevelOptions[
                                                                 itemKey

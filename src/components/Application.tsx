@@ -86,12 +86,8 @@ const Application = () => {
                     }}
                 >
                     <IonIcon
+                        className="back"
                         icon={arrowBack}
-                        style={{
-                            fontSize: "18px",
-                            padding: "9px 10px 0px 0px",
-                            cursor: "pointer",
-                        }}
                         onClick={() =>
                             history.push("/translation-app/app-list/")
                         }

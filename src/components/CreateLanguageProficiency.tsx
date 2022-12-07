@@ -1,13 +1,15 @@
 import { useMutation } from "@apollo/client";
 import {
     IonContent,
+    IonItem,
+    IonNote,
     IonSelect,
     IonSelectOption,
     useIonToast,
 } from "@ionic/react";
 import { useKeycloak } from "@react-keycloak/web";
 import { useEffect, useMemo, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useHistory } from "react-router";
 import Button from "../common/Button";
 import { iso_639_3_enum } from "../common/iso_639_3_enum";
@@ -17,16 +19,35 @@ import {
 } from "../common/queries";
 import Title from "../common/Title";
 import { skillLevelEnum } from "./LanguageProficiencyv2";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { object, string } from "yup";
+
+const schema = object().shape({
+    language_id: string().required(),
+    skill_level: string().required(),
+});
+
+interface ILanguageProficiencyForm {
+    language_id: string;
+    skill_level: string;
+}
 
 const CreateLanguageProficiency = () => {
+    const {
+        handleSubmit,
+        formState: { errors },
+        register,
+        reset,
+        watch,
+    } = useForm<ILanguageProficiencyForm>({
+        resolver: yupResolver(schema),
+    });
+
     const history = useHistory();
     const [present] = useIonToast();
     const { keycloak } = useKeycloak();
 
-    const { control, handleSubmit } = useForm();
-    const [skillLevel, setSkillLevel] = useState("");
     const [userId, setUserId] = useState<string>("");
-    const [languageId, setLanguageId] = useState<string | undefined>(undefined);
 
     const [createLanguageProficiency] = useMutation(
         createLanguageProficiencyMutation
@@ -34,7 +55,7 @@ const CreateLanguageProficiency = () => {
 
     //this is a temporal fix to avoid render all possible options
     const iso_639_3_options = useMemo(
-        () => Object.values(iso_639_3_enum).slice(0, 50),
+        () => Object.values(iso_639_3_enum).slice(0, 100),
         []
     );
 
@@ -48,13 +69,15 @@ const CreateLanguageProficiency = () => {
         }
     }, [keycloak]);
 
-    const handleFormSubmit = () => {
+    const handleFormSubmit = (
+        languageProficiencyForm: ILanguageProficiencyForm
+    ) => {
         createLanguageProficiency({
             variables: {
                 input: {
-                    language_id: languageId,
+                    language_id: languageProficiencyForm.language_id,
                     language_table: "iso_639_3",
-                    skill_level: skillLevel.replace(" ", ""),
+                    skill_level: languageProficiencyForm.skill_level,
                     user_id: userId,
                 },
             },
@@ -72,7 +95,7 @@ const CreateLanguageProficiency = () => {
                         ...cached,
                         languageProfienciesByUserId: [
                             //@ts-expect-error
-                            ...cached.languageProfienciesByUserId,
+                            ...cached.languageProfienciesByUserId ?? [],
                             result.data.createLanguageProficiency,
                         ],
                     },
@@ -84,6 +107,7 @@ const CreateLanguageProficiency = () => {
                     duration: 1500,
                     color: "success",
                 });
+                reset();
             },
             onError: (e) => {
                 present({
@@ -93,9 +117,6 @@ const CreateLanguageProficiency = () => {
                 });
             },
         });
-
-        setSkillLevel("");
-        setLanguageId(undefined);
     };
 
     return (
@@ -104,75 +125,75 @@ const CreateLanguageProficiency = () => {
                 <Title title="Add Language Proficiency" />
                 <form onSubmit={handleSubmit(handleFormSubmit)}>
                     <div style={{ paddingTop: "20px" }}>
-                        <Controller
-                            control={control}
-                            name="ISO 693-3 Code"
-                            render={() => (
-                                <IonSelect
-                                    className="custom"
-                                    placeholder="Choose Language"
-                                    style={{
-                                        border: "1px solid gray",
-                                        borderRadius: "10px",
-                                    }}
-                                    onIonChange={(e) => {
-                                        const languageId = Object.keys(
-                                            iso_639_3_enum
-                                        ).find(
+                        <IonItem
+                            lines="none"
+                            className={`form ${
+                                "language_id" in errors
+                                    ? "ion-invalid"
+                                    : "ion-valid"
+                            }`}
+                        >
+                            <IonSelect
+                                {...register("language_id")}
+                                placeholder="Choose Language"
+                                onIonChange={(e) => e.target.value}
+                                value={watch("language_id")}
+                            >
+                                {iso_639_3_options.map((option) => (
+                                    <IonSelectOption
+                                        key={option}
+                                        value={Object.keys(iso_639_3_enum).find(
                                             (key: string) =>
-                                                iso_639_3_enum[key] ===
-                                                e.target.value
-                                        );
-                                        setLanguageId(languageId!);
-                                    }}
-                                    value={iso_639_3_enum[languageId!]}
-                                >
-                                    {iso_639_3_options.map((option) => (
-                                        <IonSelectOption key={option}>
-                                            {option}
-                                        </IonSelectOption>
-                                    ))}
-                                </IonSelect>
-                            )}
-                        />
+                                                iso_639_3_enum[key] === option
+                                        )}
+                                    >
+                                        {option}
+                                    </IonSelectOption>
+                                ))}
+                            </IonSelect>
+                            <IonNote slot="error">
+                                {errors.language_id?.message}
+                            </IonNote>
+                        </IonItem>
                     </div>
 
                     <div style={{ paddingTop: "10px" }}>
-                        <Controller
-                            control={control}
-                            name="Proficiency Level"
-                            render={() => (
-                                <IonSelect
-                                    placeholder="Proficiency Level"
-                                    style={{
-                                        border: "1px solid gray",
-                                        borderRadius: "10px",
-                                    }}
-                                    onIonChange={(e) => {
-                                        setSkillLevel(e.detail.value);
-                                    }}
-                                    value={skillLevel}
-                                >
-                                    {Object.entries(skillLevelEnum).map(
-                                        ([skill, value]) => (
-                                            <IonSelectOption
-                                                value={skill}
-                                                key={value}
-                                            >
-                                                {skill}
-                                            </IonSelectOption>
-                                        )
-                                    )}
-                                </IonSelect>
-                            )}
-                        />
-                        <div
-                            style={{
-                                paddingTop: "10px",
-                                display: "flex",
-                                justifyContent: "space-evenly",
-                            }}
+                        <IonItem
+                            lines="none"
+                            className={`form ${
+                                "skill_level" in errors
+                                    ? "ion-invalid"
+                                    : "ion-valid"
+                            }`}
                         >
+                            <IonSelect
+                                {...register("skill_level")}
+                                placeholder="Proficiency Level"
+                                onIonChange={(e) => {
+                                    console.log(
+                                        e.target.value.replace(" ", "")
+                                    );
+                                    return e.target.value.replace(" ", "");
+                                }}
+                                value={watch("skill_level")}
+                            >
+                                {Object.entries(skillLevelEnum).map(
+                                    ([skill, value]) => (
+                                        <IonSelectOption
+                                            value={skill.replace(" ", "")}
+                                            key={value}
+                                        >
+                                            {skill}
+                                        </IonSelectOption>
+                                    )
+                                )}
+                            </IonSelect>
+                            <IonNote slot="error">
+                                {errors.skill_level?.message}
+                            </IonNote>
+                        </IonItem>
+
+                        <div className="button-container">
                             <Button
                                 label="Cancel"
                                 color="light"

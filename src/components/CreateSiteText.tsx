@@ -156,13 +156,7 @@ const CreateSiteText = () => {
                             />
                         </div>
                     </div>
-                    <div
-                        style={{
-                            paddingTop: "10px",
-                            display: "flex",
-                            justifyContent: "space-evenly",
-                        }}
-                    >
+                    <div className="button-container">
                         <Button
                             label="Cancel"
                             color="light"

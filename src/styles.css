@@ -1,3 +1,7 @@
+* {
+    font-family: "Inter", sans-serif;
+}
+
 .form-wrapper {
     margin-top: 200px;
     text-align: center;
@@ -13,13 +17,11 @@
 }
 
 .font-title {
-    font-family: "Inter", sans-serif;
     font-weight: 600;
     font-size: 18px;
 }
 
 .font-subtitle {
-    font-family: "Inter", sans-serif;
     font-weight: 600;
     font-size: 16px;
     color: #1e1e1e;
@@ -27,13 +29,11 @@
 }
 
 .font-description {
-    font-family: "Inter", sans-serif;
     font-weight: 400;
     font-size: 16px;
 }
 
 .font-language {
-    font-family: "Inter", sans-serif;
     font-weight: 400;
     font-size: 14px;
 }
@@ -49,8 +49,17 @@
     justify-content: space-evenly;
 }
 
+.searchbar-input {
+    --border-radius: 10px;
+}
+
 ion-button {
     --border-radius: 10px;
+    text-transform: capitalize;
+}
+
+ion-button.lang {
+    --padding-start: 8px;
 }
 
 ion-input {

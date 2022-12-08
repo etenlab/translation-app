@@ -29,7 +29,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { object, string } from "yup";
 
 const schema = object().shape({
-    site_text_translation: string().min(5).max(20).required(),
+    site_text_translation: string().min(5).max(25).required(),
     description_translation: string().min(5).max(256).required(),
     language_id: string().required(),
 });

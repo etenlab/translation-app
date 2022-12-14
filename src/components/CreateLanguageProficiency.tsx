@@ -166,7 +166,10 @@ const CreateLanguageProficiency = () => {
                     </IonNote>
                 </div>
 
-                <IonModal isOpen={isOpen} onWillDismiss={() => setIsOpen(false)}>
+                <IonModal
+                    isOpen={isOpen}
+                    onWillDismiss={() => setIsOpen(false)}
+                >
                     <IonHeader>
                         <IonToolbar>
                             <IonTitle>Choose Language</IonTitle>
@@ -195,10 +198,10 @@ const CreateLanguageProficiency = () => {
                                         <IonItem
                                             key={item}
                                             style={{
-                                                color:
+                                                opacity:
                                                     value === langId
-                                                        ? "#3880FF"
-                                                        : undefined,
+                                                        ? undefined
+                                                        : 0.5,
                                             }}
                                             onClick={() => {
                                                 setLangId(value);

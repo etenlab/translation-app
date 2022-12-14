@@ -29,6 +29,7 @@ const EditSiteText = () => {
         handleSubmit,
         formState: { errors },
         setValue,
+        watch,
     } = useForm<ISiteTextForm>({
         resolver: yupResolver(schema),
     });
@@ -55,28 +56,32 @@ const EditSiteText = () => {
     }, [data, setValue]);
 
     const handleSubmitForm = (siteTextForm: ISiteTextForm) => {
-        updateSiteText({
-            variables: {
-                input: {
-                    ...siteTextForm,
-                    site_text_id: +params.site_text_id!,
+        if (
+            watch("site_text_key") !== data?.siteText.site_text_key ||
+            watch("description") !== data?.siteText.description
+        )
+            updateSiteText({
+                variables: {
+                    input: {
+                        ...siteTextForm,
+                        site_text_id: +params.site_text_id!,
+                    },
                 },
-            },
-            onCompleted: () => {
-                present({
-                    message: "Site text updated successfully",
-                    duration: 1500,
-                    color: "success",
-                });
-            },
-            onError: (e) => {
-                present({
-                    message: e.message,
-                    duration: 1500,
-                    color: "danger",
-                });
-            },
-        });
+                onCompleted: () => {
+                    present({
+                        message: "Site text updated successfully",
+                        duration: 1500,
+                        color: "success",
+                    });
+                },
+                onError: (e) => {
+                    present({
+                        message: e.message,
+                        duration: 1500,
+                        color: "danger",
+                    });
+                },
+            });
     };
 
     return (
@@ -139,7 +144,7 @@ const EditSiteText = () => {
                             />
                         </div>
                     </div>
-                    <div className="button-container"> 
+                    <div className="button-container">
                         <Button
                             label="Cancel"
                             color="light"

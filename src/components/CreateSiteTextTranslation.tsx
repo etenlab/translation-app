@@ -2,6 +2,8 @@ import {
     IonContent,
     IonIcon,
     IonInput,
+    IonItem,
+    IonNote,
     IonSelect,
     IonSelectOption,
     IonText,
@@ -23,6 +25,20 @@ import { useEffect, useState } from "react";
 import Button from "../common/Button";
 import { iso_639_3_enum } from "../common/iso_639_3_enum";
 import { useKeycloak } from "@react-keycloak/web";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { object, string } from "yup";
+
+const schema = object().shape({
+    site_text_translation: string().min(5).max(25).required(),
+    description_translation: string().min(5).max(256).required(),
+    language_id: string().required(),
+});
+
+export interface ISiteTextTranslationForm {
+    site_text_translation: string;
+    description_translation: string;
+    language_id: string;
+}
 
 export interface ILanguageProficiency {
     id: number;
@@ -34,21 +50,29 @@ export interface ILanguageProficiency {
 }
 
 const CreateSiteTextTranslation = () => {
-    const { control, handleSubmit } = useForm();
+    const {
+        control,
+        handleSubmit,
+        formState: { errors },
+        register,
+        reset,
+        watch,
+    } = useForm<ISiteTextTranslationForm>({
+        resolver: yupResolver(schema),
+    });
+
     const { search } = useLocation();
     const { keycloak } = useKeycloak();
     const [present] = useIonToast();
-
     const history = useHistory();
     const params = queryString.parse(search);
 
     const [userId, setUserId] = useState<string>("");
-    const [languageId, setLanguageId] = useState<string | undefined>(undefined);
-    const [siteTextTranslation, setSiteTextTranslation] = useState<string>("");
-    const [descriptionTranslation, setDescriptionTranslation] = useState<
-        string | undefined
-    >(undefined);
     const [iso6393Options, setIso6393Options] = useState<string[]>([]);
+
+    const [createSiteTextTranslation] = useMutation(
+        createSiteTextTranslationMutation
+    );
 
     const { data: languageProficiencies } = useQuery(
         languageProficienciesByUserIdQuery,
@@ -79,10 +103,6 @@ const CreateSiteTextTranslation = () => {
             );
     }, [languageProficiencies?.languageProfienciesByUserId]);
 
-    const [createSiteTextTranslation] = useMutation(
-        createSiteTextTranslationMutation
-    );
-
     const { data } = useQuery(siteTextQuery, {
         skip: +params.site_text_id! === undefined,
         variables: {
@@ -90,16 +110,20 @@ const CreateSiteTextTranslation = () => {
         },
     });
 
-    const handleSubmitForm = () => {
+    const handleSubmitForm = (
+        siteTextTranslationForm: ISiteTextTranslationForm
+    ) => {
         createSiteTextTranslation({
             variables: {
                 input: {
                     site_text: data?.siteText.id,
-                    site_text_translation: siteTextTranslation,
-                    language_id: languageId,
+                    site_text_translation:
+                        siteTextTranslationForm.site_text_translation,
+                    language_id: siteTextTranslationForm.language_id,
                     language_table: "iso_639_3",
                     user_id: userId,
-                    description_translation: descriptionTranslation,
+                    description_translation:
+                        siteTextTranslationForm.description_translation,
                 },
             },
             onCompleted: () => {
@@ -108,9 +132,7 @@ const CreateSiteTextTranslation = () => {
                     duration: 1500,
                     color: "success",
                 });
-                setSiteTextTranslation("");
-                setDescriptionTranslation(undefined);
-                setLanguageId("");
+                reset();
             },
             onError: (e: { message: any }) => {
                 present({
@@ -133,12 +155,8 @@ const CreateSiteTextTranslation = () => {
                     }}
                 >
                     <IonIcon
+                        className="back"
                         icon={arrowBack}
-                        style={{
-                            fontSize: "18px",
-                            padding: "9px 10px 0px 0px",
-                            cursor: "pointer",
-                        }}
                         onClick={() =>
                             history.push(
                                 `/translation-app/site_texts?site_text_id=${params.site_text_id}`
@@ -172,95 +190,102 @@ const CreateSiteTextTranslation = () => {
                 <form onSubmit={handleSubmit(handleSubmitForm)}>
                     <div style={{ padding: "20px 0px 0px 0px" }}>
                         <div style={{ paddingBottom: "20px" }}>
-                            <Controller
-                                control={control}
-                                name="ISO 693-3 Code"
-                                render={() => (
-                                    <IonSelect
-                                        className="custom"
-                                        placeholder="Choose Language"
-                                        style={{
-                                            border: "1px solid gray",
-                                            borderRadius: "10px",
-                                        }}
-                                        onIonChange={(e) => {
-                                            const languageId = Object.keys(
+                            <IonItem
+                                lines="none"
+                                className={`form ${
+                                    "language_id" in errors
+                                        ? "ion-invalid"
+                                        : "ion-valid"
+                                }`}
+                            >
+                                <IonSelect
+                                    {...register("language_id")}
+                                    placeholder="Choose Language"
+                                    onIonChange={(e) => e.target.value}
+                                    value={watch("language_id")}
+                                >
+                                    {iso6393Options.map((option) => (
+                                        <IonSelectOption
+                                            key={option}
+                                            value={Object.keys(
                                                 iso_639_3_enum
                                             ).find(
                                                 (key: string) =>
                                                     iso_639_3_enum[key] ===
-                                                    e.target.value
-                                            );
-                                            setLanguageId(languageId!);
-                                        }}
-                                        value={iso_639_3_enum[languageId!]}
-                                    >
-                                        {iso6393Options.map((option) => (
-                                            <IonSelectOption key={option}>
-                                                {option}
-                                            </IonSelectOption>
-                                        ))}
-                                    </IonSelect>
-                                )}
-                            />
+                                                    option
+                                            )}
+                                        >
+                                            {option}
+                                        </IonSelectOption>
+                                    ))}
+                                </IonSelect>
+                                <IonNote slot="error">
+                                    {errors.language_id?.message}
+                                </IonNote>
+                            </IonItem>
                         </div>
 
                         <div>
                             <Controller
                                 control={control}
-                                name="siteTextTranslation"
-                                render={() => (
-                                    <IonInput
-                                        className="custom"
-                                        placeholder="New Translation"
-                                        style={{
-                                            border: "1px solid gray",
-                                            borderRadius: "10px",
-                                        }}
-                                        onIonChange={(e) => {
-                                            setSiteTextTranslation(
-                                                e.target
-                                                    .value as unknown as string
-                                            );
-                                        }}
-                                        value={siteTextTranslation}
-                                    />
+                                name="site_text_translation"
+                                render={({ field: { onChange, value } }) => (
+                                    <IonItem
+                                        lines="none"
+                                        className={`form ${
+                                            "site_text_translation" in errors
+                                                ? "ion-invalid"
+                                                : "ion-valid"
+                                        }`}
+                                    >
+                                        <IonInput
+                                            placeholder="New Translation"
+                                            onIonChange={onChange}
+                                            value={value}
+                                        />
+                                        <IonNote slot="error">
+                                            {
+                                                errors.site_text_translation
+                                                    ?.message
+                                            }
+                                        </IonNote>
+                                    </IonItem>
                                 )}
                             />
                         </div>
 
-                        <div style={{ paddingTop: "20px" }}>
+                        <div style={{ paddingTop: "10px" }}>
                             <Controller
                                 control={control}
-                                name="translation Description"
-                                render={() => (
-                                    <IonTextarea
-                                        className="custom"
-                                        rows={5}
-                                        placeholder="New Translation of Description"
-                                        style={{
-                                            border: "1px solid gray",
-                                            borderRadius: "10px",
-                                        }}
-                                        onIonChange={(e) => {
-                                            setDescriptionTranslation(
-                                                e.target
-                                                    .value as unknown as string
-                                            );
-                                        }}
-                                        value={descriptionTranslation}
-                                    />
+                                name="description_translation"
+                                render={({ field: { onChange, value } }) => (
+                                    <IonItem
+                                        lines="none"
+                                        className={`form ${
+                                            "description_translation" in errors
+                                                ? "ion-invalid"
+                                                : "ion-valid"
+                                        }`}
+                                    >
+                                        <IonTextarea
+                                            autoGrow
+                                            rows={5}
+                                            placeholder="New Translation of Description"
+                                            onIonChange={onChange}
+                                            value={value}
+                                        />
+                                        <IonNote slot="error">
+                                            {
+                                                errors.description_translation
+                                                    ?.message
+                                            }
+                                        </IonNote>
+                                    </IonItem>
                                 )}
                             />
                         </div>
 
-                        <div
-                            style={{
-                                paddingTop: "10px",
-                                display: "flex",
-                                justifyContent: "space-evenly",
-                            }}
-                        >
+                        <div className="button-container">
                             <Button
                                 label="Cancel"
                                 color="light"

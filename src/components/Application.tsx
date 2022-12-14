@@ -86,12 +86,8 @@ const Application = () => {
                     }}
                 >
                     <IonIcon
+                        className="back"
                         icon={arrowBack}
-                        style={{
-                            fontSize: "18px",
-                            padding: "9px 10px 0px 0px",
-                            cursor: "pointer",
-                        }}
                         onClick={() =>
                             history.push("/translation-app/app-list/")
                         }
@@ -120,7 +116,7 @@ const Application = () => {
                             }
                         />
                     </div>
-                    <IonList style={{ marginLeft: "-21px", marginTop: "5px" }}>
+                    <IonList style={{ marginLeft: "-12px", marginTop: "5px" }}>
                         <IonSearchbar
                             placeholder="Find Site Text"
                             debounce={1000}

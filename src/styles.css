@@ -1,3 +1,7 @@
+* {
+    font-family: "Inter", sans-serif;
+}
+
 .form-wrapper {
     margin-top: 200px;
     text-align: center;
@@ -13,13 +17,11 @@
 }
 
 .font-title {
-    font-family: "Inter", sans-serif;
     font-weight: 600;
     font-size: 18px;
 }
 
 .font-subtitle {
-    font-family: "Inter", sans-serif;
     font-weight: 600;
     font-size: 16px;
     color: #1e1e1e;
@@ -27,21 +29,68 @@
 }
 
 .font-description {
-    font-family: "Inter", sans-serif;
     font-weight: 400;
     font-size: 16px;
 }
 
-ion-button {
+.font-language {
+    font-weight: 400;
+    font-size: 14px;
+}
+
+.native-input {
+    --padding-end: 15px;
+    --padding-start: 15px;
+}
+
+.button-container {
+    padding-top: 10px;
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.searchbar-input {
     --border-radius: 10px;
 }
 
-ion-input.custom {
-    --padding-end: 15px;
-    --padding-start: 15px;
+ion-button {
+    --border-radius: 10px;
+    text-transform: capitalize;
 }
 
-ion-textarea.custom {
+ion-button.lang {
+    --padding-start: 8px;
+}
+
+ion-input {
+    border: 1px solid gray;
+    border-radius: 10px;
+}
+
+textarea {
     --padding-start: 15px;
-    --padding-end: 15px;
+    --padding-end: 0px;
+}
+
+ion-item.form::part(native) {
+    --padding-start: 0px;
+    --inner-padding-end: 0px;
+}
+
+ion-textarea {
+    border: 1px solid gray;
+    border-radius: 10px;
+}
+
+ion-select {
+    padding-left: 10px;
+    border: 1px solid gray;
+    border-radius: 10px;
+    width: 100%;
+}
+
+ion-icon.back {
+    font-size: 18px;
+    padding: 9px 10px 0px 0px;
+    cursor: pointer;
 }

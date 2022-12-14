@@ -1,6 +1,8 @@
 import {
     IonContent,
     IonInput,
+    IonItem,
+    IonNote,
     IonText,
     IonTextarea,
     useIonToast,
@@ -9,33 +11,49 @@ import { useHistory, useLocation } from "react-router";
 import queryString from "query-string";
 import Title from "../common/Title";
 import { Controller, useForm } from "react-hook-form";
-import { useState } from "react";
 import { useMutation } from "@apollo/client";
 import {
     createSiteTextMutation,
     siteTextsByAppIdQuery,
 } from "../common/queries";
 import Button from "../common/Button";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { object, string } from "yup";
+
+const schema = object().shape({
+    site_text_key: string().min(5).max(256).required(),
+    description: string().min(5).max(256).required(),
+});
+
+export interface ISiteTextForm {
+    site_text_key: string;
+    description: string;
+}
 
 const CreateSiteText = () => {
-    const [present] = useIonToast();
-    const { search } = useLocation();
-    const history = useHistory();
+    const {
+        control,
+        handleSubmit,
+        formState: { errors },
+        reset,
+    } = useForm<ISiteTextForm>({
+        resolver: yupResolver(schema),
+    });
 
+    const [present] = useIonToast();
+    const history = useHistory();
+    const { search } = useLocation();
     const params = queryString.parse(search);
-    const { control, handleSubmit } = useForm();
-    const [siteText, setSiteText] = useState<string>("");
-    const [siteTextDescription, setSiteTextDescription] = useState<string>("");
 
     const [createSiteText] = useMutation(createSiteTextMutation);
 
-    const handleSubmitForm = () => {
+    const handleSubmitForm = (siteTextForm: ISiteTextForm) => {
         createSiteText({
             variables: {
                 input: {
                     app: +params.app!,
-                    description: siteTextDescription,
-                    site_text_key: siteText,
+                    description: siteTextForm.description,
+                    site_text_key: siteTextForm.site_text_key,
                     language_id: 1,
                     language_table: "iso_639_3",
                 },
@@ -47,7 +65,6 @@ const CreateSiteText = () => {
                     variables: { siteTextsByAppId: +params.app! },
                     returnPartialData: true,
                 });
-                console.log(cached);
                 cache.writeQuery({
                     query: siteTextsByAppIdQuery,
                     variables: { siteTextsByAppId: +params.app! },
@@ -55,14 +72,17 @@ const CreateSiteText = () => {
                         //@ts-expect-error
                         ...cached,
                         siteTextsByApp: [
-                            ////@ts-expect-error
-                            // ...cached.siteTextsByApp,
+                            //@ts-expect-error
+                            ...cached.siteTextsByApp,
                             result.data.createSiteText,
                         ],
                     },
                 });
             },
 
+            onCompleted: () => {
+                reset();
+            },
             onError: (e) => {
                 present({
                     message: e.message,
@@ -71,9 +91,6 @@ const CreateSiteText = () => {
                 });
             },
         });
-
-        setSiteText("");
-        setSiteTextDescription("");
     };
 
     return (
@@ -87,59 +104,59 @@ const CreateSiteText = () => {
                     <div>
                         <Controller
                             control={control}
-                            name="siteText"
-                            render={() => (
-                                <IonInput
-                                    className="custom"
-                                    placeholder="New Site Text"
-                                    style={{
-                                        border: "1px solid gray",
-                                        borderRadius: "10px",
-                                    }}
-                                    onIonChange={(e) => {
-                                        setSiteText(
-                                            e.target.value as unknown as string
-                                        );
-                                    }}
-                                    value={siteText}
-                                />
+                            name="site_text_key"
+                            render={({ field: { onChange, value } }) => (
+                                <IonItem
+                                    lines="none"
+                                    className={`form ${
+                                        "site_text_key" in errors
+                                            ? "ion-invalid"
+                                            : "ion-valid"
+                                    }`}
+                                >
+                                    <IonInput
+                                        placeholder="New Site Text"
+                                        onIonChange={onChange}
+                                        value={value}
+                                    />
+                                    <IonNote slot="error">
+                                        {errors.site_text_key?.message}
+                                    </IonNote>
+                                </IonItem>
                             )}
                         />
                     </div>
 
-                    <div style={{ padding: "20px 0px 0px 0px" }}>
+                    <div style={{ padding: "10px 0px 0px 0px" }}>
                         <div>
                             <Controller
                                 control={control}
-                                name="siteText"
-                                render={() => (
-                                    <IonTextarea
-                                        className="custom"
-                                        rows={5}
-                                        placeholder="Description"
-                                        style={{
-                                            border: "1px solid gray",
-                                            borderRadius: "10px",
-                                        }}
-                                        onIonChange={(e) => {
-                                            setSiteTextDescription(
-                                                e.target
-                                                    .value as unknown as string
-                                            );
-                                        }}
-                                        value={siteTextDescription}
-                                    />
+                                name="description"
+                                render={({ field: { onChange, value } }) => (
+                                    <IonItem
+                                        lines="none"
+                                        className={`form ${
+                                            "description" in errors
+                                                ? "ion-invalid"
+                                                : "ion-valid"
+                                        }`}
+                                    >
+                                        <IonTextarea
+                                            autoGrow
+                                            rows={5}
+                                            placeholder="Description"
+                                            onIonChange={onChange}
+                                            value={value}
+                                        />
+                                        <IonNote slot="error">
+                                            {errors.description?.message}
+                                        </IonNote>
+                                    </IonItem>
                                 )}
                             />
                         </div>
                     </div>
-                    <div
-                        style={{
-                            paddingTop: "10px",
-                            display: "flex",
-                            justifyContent: "space-evenly",
-                        }}
-                    >
+                    <div className="button-container">
                         <Button
                             label="Cancel"
                             color="light"

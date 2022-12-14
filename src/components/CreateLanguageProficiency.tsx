@@ -1,13 +1,21 @@
 import { useMutation } from "@apollo/client";
 import {
+    IonButton,
     IonContent,
+    IonHeader,
+    IonItem,
+    IonModal,
+    IonNote,
+    IonSearchbar,
     IonSelect,
     IonSelectOption,
+    IonTitle,
+    IonToolbar,
     useIonToast,
 } from "@ionic/react";
 import { useKeycloak } from "@react-keycloak/web";
 import { useEffect, useMemo, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useHistory } from "react-router";
 import Button from "../common/Button";
 import { iso_639_3_enum } from "../common/iso_639_3_enum";
@@ -16,26 +24,45 @@ import {
     languageProficienciesByUserIdQuery,
 } from "../common/queries";
 import Title from "../common/Title";
+import { Virtuoso } from "react-virtuoso";
 import { skillLevelEnum } from "./LanguageProficiencyv2";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { object, string } from "yup";
+
+const schema = object().shape({
+    language_id: string().required(),
+    skill_level: string().required(),
+});
+
+interface ILanguageProficiencyForm {
+    language_id: string;
+    skill_level: string;
+}
 
 const CreateLanguageProficiency = () => {
+    const {
+        handleSubmit,
+        formState: { errors },
+        register,
+        reset,
+        setValue,
+        watch,
+    } = useForm<ILanguageProficiencyForm>({
+        resolver: yupResolver(schema),
+    });
+
     const history = useHistory();
     const [present] = useIonToast();
     const { keycloak } = useKeycloak();
 
-    const { control, handleSubmit } = useForm();
-    const [skillLevel, setSkillLevel] = useState("");
+    const iso_639_3_options = useMemo(() => Object.values(iso_639_3_enum), []);
+    const [isOpen, setIsOpen] = useState<boolean>(false);
+    const [langId, setLangId] = useState<string | undefined>("");
+    const [results, setResults] = useState<string[]>([...iso_639_3_options]);
     const [userId, setUserId] = useState<string>("");
-    const [languageId, setLanguageId] = useState<string | undefined>(undefined);
 
     const [createLanguageProficiency] = useMutation(
         createLanguageProficiencyMutation
-    );
-
-    //this is a temporal fix to avoid render all possible options
-    const iso_639_3_options = useMemo(
-        () => Object.values(iso_639_3_enum).slice(0, 50),
-        []
     );
 
     useEffect(() => {
@@ -48,13 +75,23 @@ const CreateLanguageProficiency = () => {
         }
     }, [keycloak]);
 
-    const handleFormSubmit = () => {
+    const handleChange = (iso: string) => {
+        let query = iso.toLowerCase();
+
+        setResults(
+            iso_639_3_options.filter((i) => i.toLowerCase().indexOf(query) > -1)
+        );
+    };
+
+    const handleFormSubmit = (
+        languageProficiencyForm: ILanguageProficiencyForm
+    ) => {
         createLanguageProficiency({
             variables: {
                 input: {
-                    language_id: languageId,
+                    language_id: languageProficiencyForm.language_id,
                     language_table: "iso_639_3",
-                    skill_level: skillLevel.replace(" ", ""),
+                    skill_level: languageProficiencyForm.skill_level,
                     user_id: userId,
                 },
             },
@@ -72,7 +109,7 @@ const CreateLanguageProficiency = () => {
                         ...cached,
                         languageProfienciesByUserId: [
                             //@ts-expect-error
-                            ...cached.languageProfienciesByUserId,
+                            ...(cached.languageProfienciesByUserId ?? []),
                             result.data.createLanguageProficiency,
                         ],
                     },
@@ -84,6 +121,8 @@ const CreateLanguageProficiency = () => {
                     duration: 1500,
                     color: "success",
                 });
+                setLangId(undefined);
+                reset();
             },
             onError: (e) => {
                 present({
@@ -93,97 +132,157 @@ const CreateLanguageProficiency = () => {
                 });
             },
         });
-
-        setSkillLevel("");
-        setLanguageId(undefined);
     };
+
+    console.log(errors);
 
     return (
         <IonContent>
             <div style={{ padding: "60px 20px 60px 20px" }}>
                 <Title title="Add Language Proficiency" />
+
+                <div style={{ paddingTop: "10px", paddingBottom: "10px" }}>
+                    <IonButton
+                        expand="block"
+                        color="light"
+                        className="lang"
+                        onClick={() => setIsOpen(true)}
+                    >
+                        <span
+                            style={{ marginRight: "auto" }}
+                            className="font-language"
+                        >
+                            {langId
+                                ? iso_639_3_enum[langId]
+                                : "Choose Language"}
+                        </span>
+                    </IonButton>
+                    <IonNote
+                        color="danger"
+                        slot="end"
+                        style={{ fontSize: "12px", paddingLeft: "15px" }}
+                    >
+                        {errors.language_id?.message}
+                    </IonNote>
+                </div>
+
+                <IonModal
+                    isOpen={isOpen}
+                    onWillDismiss={() => setIsOpen(false)}
+                >
+                    <IonHeader>
+                        <IonToolbar>
+                            <IonTitle>Choose Language</IonTitle>
+                        </IonToolbar>
+                    </IonHeader>
+                    <IonContent>
+                        <div style={{ height: "100%" }}>
+                            <IonSearchbar
+                                debounce={1000}
+                                onIonChange={(e) => {
+                                    setLangId(undefined);
+                                    handleChange(e.target.value!);
+                                }}
+                            />
+                            <Virtuoso
+                                style={{ height: "84%" }}
+                                data={results}
+                                itemContent={(_, item) => {
+                                    const value = Object.keys(
+                                        iso_639_3_enum
+                                    ).find(
+                                        (key: string) =>
+                                            iso_639_3_enum[key] === item
+                                    );
+                                    return (
+                                        <IonItem
+                                            key={item}
+                                            style={{
+                                                opacity:
+                                                    value === langId
+                                                        ? undefined
+                                                        : 0.5,
+                                            }}
+                                            onClick={() => {
+                                                setLangId(value);
+                                            }}
+                                        >
+                                            {item}
+                                        </IonItem>
+                                    );
+                                }}
+                            />
+
+                            <div className="button-container">
+                                <Button
+                                    label="Cancel"
+                                    color="light"
+                                    onClick={() => {
+                                        setIsOpen(false);
+                                        setResults([...iso_639_3_options]);
+                                    }}
+                                />
+                                <Button
+                                    label="Confirm"
+                                    onClick={() => {
+                                        if (langId) {
+                                            setValue("language_id", langId);
+                                            setIsOpen(false);
+                                            setResults([...iso_639_3_options]);
+                                        }
+                                    }}
+                                />
+                            </div>
+                        </div>
+                    </IonContent>
+                </IonModal>
+
                 <form onSubmit={handleSubmit(handleFormSubmit)}>
-                    <div style={{ paddingTop: "20px" }}>
-                        <Controller
-                            control={control}
-                            name="ISO 693-3 Code"
-                            render={() => (
-                                <IonSelect
-                                    className="custom"
-                                    placeholder="Choose Language"
-                                    style={{
-                                        border: "1px solid gray",
-                                        borderRadius: "10px",
-                                    }}
-                                    onIonChange={(e) => {
-                                        const languageId = Object.keys(
-                                            iso_639_3_enum
-                                        ).find(
-                                            (key: string) =>
-                                                iso_639_3_enum[key] ===
-                                                e.target.value
-                                        );
-                                        setLanguageId(languageId!);
-                                    }}
-                                    value={iso_639_3_enum[languageId!]}
-                                >
-                                    {iso_639_3_options.map((option) => (
-                                        <IonSelectOption key={option}>
-                                            {option}
+                    <div>
+                        <IonItem
+                            lines="none"
+                            className={`form ${
+                                "skill_level" in errors
+                                    ? "ion-invalid"
+                                    : "ion-valid"
+                            }`}
+                        >
+                            <IonSelect
+                                {...register("skill_level")}
+                                placeholder="Proficiency Level"
+                                onIonChange={(e) =>
+                                    e.target.value.replace(" ", "")
+                                }
+                                value={watch("skill_level")}
+                            >
+                                {Object.entries(skillLevelEnum).map(
+                                    ([skill, value]) => (
+                                        <IonSelectOption
+                                            value={skill.replace(" ", "")}
+                                            key={value}
+                                        >
+                                            {skill}
                                         </IonSelectOption>
-                                    ))}
-                                </IonSelect>
-                            )}
-                        />
+                                    )
+                                )}
+                            </IonSelect>
+                            <IonNote slot="error">
+                                {errors.skill_level?.message}
+                            </IonNote>
+                        </IonItem>
                     </div>
 
-                    <div style={{ paddingTop: "10px" }}>
-                        <Controller
-                            control={control}
-                            name="Proficiency Level"
-                            render={() => (
-                                <IonSelect
-                                    placeholder="Proficiency Level"
-                                    style={{
-                                        border: "1px solid gray",
-                                        borderRadius: "10px",
-                                    }}
-                                    onIonChange={(e) => {
-                                        setSkillLevel(e.detail.value);
-                                    }}
-                                    value={skillLevel}
-                                >
-                                    {Object.entries(skillLevelEnum).map(
-                                        ([skill, value]) => (
-                                            <IonSelectOption
-                                                value={skill}
-                                                key={value}
-                                            >
-                                                {skill}
-                                            </IonSelectOption>
-                                        )
-                                    )}
-                                </IonSelect>
-                            )}
+                    <div className="button-container">
+                        <Button
+                            label="Cancel"
+                            color="light"
+                            onClick={() =>
+                                history.push(
+                                    `/translation-app/language-proficiency/v2`
+                                )
+                            }
                         />
-                        <div
-                            style={{
-                                paddingTop: "10px",
-                                display: "flex",
-                                justifyContent: "space-evenly",
-                            }}
-                        >
-                            <Button
-                                label="Cancel"
-                                color="light"
-                                onClick={() =>
-                                    history.push(
-                                        `/translation-app/language-proficiency/v2`
-                                    )
-                                }
-                            />
-                            <Button label="Add New +" type="submit" />
-                        </div>
+                        <Button label="Add New +" type="submit" />
                     </div>
                 </form>
             </div>

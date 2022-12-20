@@ -58,10 +58,10 @@ const CreateApplication = () => {
 
     return (
         <IonContent>
-            <div style={{ padding: "60px 20px 20px 20px" }}>
+            <div style={{ padding: "60px 10px 20px 20px" }}>
                 <Title title="Add New Application" />
             </div>
-            <div style={{ padding: "0px 20px 0px 20px" }}>
+            <div style={{ padding: "0px 15px 0px 20px" }}>
                 <form onSubmit={handleSubmit(handleSubmitForm)}>
                     <div>
                         <Controller

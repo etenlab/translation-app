@@ -61,7 +61,7 @@ const LanguageProficiencyv2 = () => {
 
     return (
         <IonContent>
-            <div style={{ padding: "60px 20px 60px 20px" }}>
+            <div style={{ padding: "60px 10px 60px 20px" }}>
                 <div
                     style={{
                         display: "flex",

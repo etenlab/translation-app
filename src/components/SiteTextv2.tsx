@@ -15,13 +15,8 @@ import {
     votesQuery,
     votesStatsQuery,
 } from "../common/queries";
-import {
-    arrowBack,
-    thumbsDownOutline,
-    thumbsDownSharp,
-    thumbsUpOutline,
-    thumbsUpSharp,
-} from "ionicons/icons";
+import { arrowBack } from "ionicons/icons";
+import { FiThumbsDown, FiThumbsUp } from "react-icons/fi";
 import Button from "../common/Button";
 import { useKeycloak } from "@react-keycloak/web";
 import { orderBy } from "lodash";
@@ -242,7 +237,7 @@ const SiteTextv2 = () => {
 
     return (
         <IonContent>
-            <div style={{ padding: "60px 20px 60px 20px" }}>
+            <div style={{ padding: "60px 10px 60px 20px" }}>
                 <div
                     style={{
                         display: "flex",
@@ -341,19 +336,18 @@ const SiteTextv2 = () => {
                                                             display: "flex",
                                                             justifyContent:
                                                                 "space-between",
-                                                            width: "20%",
+                                                            width: "27%",
                                                         }}
                                                     >
                                                         <div>
-                                                            <IonIcon
-                                                                icon={
+                                                            <FiThumbsUp
+                                                                color="#43C888"
+                                                                fontSize="20px"
+                                                                fill={
                                                                     fill?.up
-                                                                        ? thumbsUpSharp
-                                                                        : thumbsUpOutline
+                                                                        ? "#43C888"
+                                                                        : "none"
                                                                 }
-                                                                style={{
-                                                                    color: "green",
-                                                                }}
                                                                 onClick={() =>
                                                                     handleVote(
                                                                         true,
@@ -364,28 +358,28 @@ const SiteTextv2 = () => {
 
                                                             <IonText
                                                                 style={{
-                                                                    fontSize: 14,
+                                                                    fontSize: 16,
+                                                                    fontWeight: 600,
                                                                     paddingLeft:
                                                                         "5px",
-                                                                    color: "green",
+                                                                    color: "#43C888",
                                                                 }}
                                                             >
                                                                 {item.up ?? 0}
                                                             </IonText>
                                                         </div>
                                                         <div>
-                                                            <IonIcon
-                                                                icon={
+                                                            <FiThumbsDown
+                                                                color="#D44C4C"
+                                                                fontSize="20px"
+                                                                fill={
                                                                     fill !=
                                                                         null &&
                                                                     fill.up ===
                                                                         false
-                                                                        ? thumbsDownSharp
-                                                                        : thumbsDownOutline
+                                                                        ? "#D44C4C"
+                                                                        : "none"
                                                                 }
-                                                                style={{
-                                                                    color: "red",
-                                                                }}
                                                                 onClick={() =>
                                                                     handleVote(
                                                                         false,
@@ -395,10 +389,11 @@ const SiteTextv2 = () => {
                                                             />
                                                             <IonText
                                                                 style={{
-                                                                    fontSize: 14,
+                                                                    fontSize: 16,
+                                                                    fontWeight: 600,
                                                                     paddingLeft:
                                                                         "5px",
-                                                                    color: "red",
+                                                                    color: "#D44C4C",
                                                                 }}
                                                             >
                                                                 {item.down ?? 0}

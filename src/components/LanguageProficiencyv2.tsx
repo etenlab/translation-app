@@ -84,7 +84,7 @@ const LanguageProficiencyv2 = () => {
                                     .split(/(?=[A-Z])/)
                                     .join(" ");
                                 return (
-                                    <IonItem key={itemKey}>
+                                    <IonItem key={item.id}>
                                         <IonGrid>
                                             <IonRow>
                                                 <IonCol

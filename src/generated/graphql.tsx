@@ -108,6 +108,7 @@ export type SiteText = {
   language_id: Scalars['Int'];
   language_table: Scalars['String'];
   site_text_key: Scalars['String'];
+  translations: Scalars['Int'];
 };
 
 export type SiteTextInput = {
@@ -172,6 +173,14 @@ export type VoteOutput = {
   vote: Vote;
 };
 
+export type VoteStat = {
+  __typename?: 'VoteStat';
+  ballot_entry_id: Scalars['Int'];
+  down: Scalars['Int'];
+  row: Scalars['Int'];
+  up: Scalars['Int'];
+};
+
 export type Mutation_Root = {
   __typename?: 'mutation_root';
   createAppItem: AppItemOutput;
@@ -181,6 +190,7 @@ export type Mutation_Root = {
   createSiteText: SiteTextOutput;
   createSiteTextTranslation: SiteTextTranslationOutput;
   createVote: VoteOutput;
+  deleteVote: Scalars['Boolean'];
   updateSiteText: SiteTextOutput;
   updateVote: Scalars['Boolean'];
 };
@@ -221,6 +231,11 @@ export type Mutation_RootCreateVoteArgs = {
 };
 
 
+export type Mutation_RootDeleteVoteArgs = {
+  id: Scalars['Float'];
+};
+
+
 export type Mutation_RootUpdateVoteArgs = {
   input: UpdateVote;
 };
@@ -236,7 +251,9 @@ export type Query_Root = {
   siteText: SiteText;
   siteTextTranslations: Array<SiteTextTranslation>;
   siteTexts: Array<SiteText>;
+  siteTextsByApp: Array<SiteText>;
   votes: Array<Vote>;
+  votesStats: Array<VoteStat>;
 };
 
 
@@ -250,8 +267,19 @@ export type Query_RootLanguageProfienciesByUserIdArgs = {
 };
 
 
+export type Query_RootSiteTextsByAppArgs = {
+  id: Scalars['Float'];
+  iso_code?: InputMaybe<Scalars['String']>;
+};
+
+
 export type Query_RootVotesArgs = {
   user_id?: InputMaybe<Scalars['String']>;
+};
+
+
+export type Query_RootVotesStatsArgs = {
+  election_id: Scalars['Float'];
 };
 
 

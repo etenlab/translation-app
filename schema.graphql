@@ -3,9 +3,6 @@ schema {
   mutation: mutation_root
 }
 
-
-# SHOWCASE INPUTS
-
 input AppItemInput {
   app_name: String!
 }
@@ -58,22 +55,20 @@ input UpdateVote {
   vote_id: Int!
 }
 
-
 type query_root {
-  #SHOWCASE
   appItem(id: Float!): AppItem!
   appItems: [AppItem!]!
   siteText: SiteText!
   siteTexts: [SiteText!]!
+  siteTextsByApp(id: Float!, iso_code: String): [SiteText!]!
   siteTextTranslations: [SiteTextTranslation!]!
   languageProficiencies: [LanguageProficiency!]!
   languageProfienciesByUserId(user_id: String): [LanguageProficiency!]!
   ballotEntryByRowId: BallotEntry!
   electionByTableName: Election!
   votes(user_id: String): [Vote!]!
+  votesStats(election_id: Float!): [VoteStat!]!
 }
-
-# SHOWCASE OUTPUTS
 
 type AppItemOutput {
   appItem: AppItem!
@@ -113,9 +108,8 @@ type mutation_root {
   createVote(input: VoteInput!): VoteOutput!
   updateSiteText: SiteTextOutput!
   updateVote(input: UpdateVote!): Boolean!
+  deleteVote(id: Float!): Boolean!
 }
-
-# SHOWCASE TYPES
 
 type AppItem {
   app_name: String!
@@ -129,6 +123,7 @@ type SiteText {
   language_id: Int!
   language_table: String!
   site_text_key: String!
+  translations: Int!
 }
 
 type SiteTextTranslation {
@@ -172,6 +167,13 @@ type Vote {
   id: Int!
   up: Boolean!
   user_id: String!
+}
+
+type VoteStat {
+  ballot_entry_id: Int!
+  row: Int!
+  down: Int!
+  up: Int!
 }
 
 enum LanguageProficiencyEnum {

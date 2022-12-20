@@ -78,27 +78,30 @@ export const updateSiteTextMutation = gql`
 `;
 
 export const siteTextsByAppIdQuery = gql`
-    query SiteTextsByApp($siteTextsByAppId: Float!) @api(name: site_text) {
-        siteTextsByApp(id: $siteTextsByAppId) {
+    query SiteTextsByApp($siteTextsByAppId: Float!, $isoCode: String)
+    @api(name: site_text) {
+        siteTextsByApp(id: $siteTextsByAppId, iso_code: $isoCode) {
             app
             description
             id
             site_text_key
             language_table
             language_id
+            translations
         }
     }
 `;
 
 export const siteTextTranslationsQuery = gql`
-    query siteTextTranslations @api(name: site_text) {
-        siteTextTranslations {
-            language_id
+    query SiteTextTranslations($siteTextId: Float!) @api(name: site_text) {
+        siteTextTranslations(siteTextId: $siteTextId) {
+            description_translation
             id
+            language_id
             language_table
+            site_text
             site_text_translation
             user_id
-            site_text
         }
     }
 `;
@@ -139,8 +142,8 @@ export const createLanguageProficiencyMutation = gql`
                 id
                 language_id
                 language_table
-                user_id
                 skill_level
+                user_id
             }
         }
     }
@@ -204,6 +207,9 @@ export const createVoteMutation = gql`
     mutation CreateVote($input: VoteInput!) @api(name: voting) {
         createVote(input: $input) {
             vote {
+                ballot_entry {
+                    row
+                }
                 ballot_entry_id
                 id
                 up
@@ -220,9 +226,15 @@ export const updateVoteMutation = gql`
             up
             user_id
             ballot_entry {
-                id
+                row
             }
         }
+    }
+`;
+
+export const deleteVoteMutation = gql`
+    mutation Mutation($deleteVoteId: Float!) @api(name: voting) {
+        deleteVote(id: $deleteVoteId)
     }
 `;
 
@@ -248,6 +260,17 @@ export const votesQuery = gql`
             ballot_entry {
                 row
             }
+        }
+    }
+`;
+
+export const votesStatsQuery = gql`
+    query VotesStats($electionId: Float!) @api(name: voting) {
+        votesStats(election_id: $electionId) {
+            ballot_entry_id
+            row
+            down
+            up
         }
     }
 `;

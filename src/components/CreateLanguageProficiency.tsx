@@ -95,6 +95,12 @@ const CreateLanguageProficiency = () => {
                     user_id: userId,
                 },
             },
+            refetchQueries: [
+                {
+                    query: languageProficienciesByUserIdQuery,
+                    variables: { userId },
+                },
+            ],
             update: (cache, result) => {
                 const cached = cache.readQuery({
                     query: languageProficienciesByUserIdQuery,
@@ -133,8 +139,6 @@ const CreateLanguageProficiency = () => {
             },
         });
     };
-
-    console.log(errors);
 
     return (
         <IonContent>
@@ -251,7 +255,7 @@ const CreateLanguageProficiency = () => {
                                 {...register("skill_level")}
                                 placeholder="Proficiency Level"
                                 onIonChange={(e) =>
-                                    e.target.value.replace(" ", "")
+                                    e && e.target.value.replace(" ", "")
                                 }
                                 value={watch("skill_level")}
                             >

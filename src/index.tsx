@@ -27,11 +27,11 @@ const client = new ApolloClient({
 });
 
 const eventLogger = (event: unknown, error: unknown) => {
-    console.log("onKeycloakEvent", event, error);
+    // console.log("onKeycloakEvent", event, error);
 };
 
 const tokenLogger = (tokens: unknown) => {
-    console.log("onKeycloakTokens", tokens);
+    // console.log("onKeycloakTokens", tokens);
 };
 
 const container = document.getElementById("root");

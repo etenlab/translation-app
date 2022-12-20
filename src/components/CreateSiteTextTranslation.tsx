@@ -16,9 +16,12 @@ import queryString from "query-string";
 import Title from "../common/Title";
 import { Controller, useForm } from "react-hook-form";
 import {
+    createBallotEntryMutation,
     createSiteTextTranslationMutation,
+    electionByTableNameQuery,
     languageProficienciesByUserIdQuery,
     siteTextQuery,
+    siteTextTranslationsQuery,
 } from "../common/queries";
 import { useMutation, useQuery } from "@apollo/client";
 import { useEffect, useState } from "react";
@@ -67,22 +70,33 @@ const CreateSiteTextTranslation = () => {
     const history = useHistory();
     const params = queryString.parse(search);
 
-    const [userId, setUserId] = useState<string>("");
+    const [userId, setUserId] = useState<string | undefined>(undefined);
     const [iso6393Options, setIso6393Options] = useState<string[]>([]);
 
     const [createSiteTextTranslation] = useMutation(
         createSiteTextTranslationMutation
     );
+    const [createBallotEntry] = useMutation(createBallotEntryMutation);
 
     const { data: languageProficiencies } = useQuery(
         languageProficienciesByUserIdQuery,
         {
-            skip: !!!userId,
+            skip: userId === undefined,
             variables: {
                 userId: userId,
             },
         }
     );
+
+    const { data: electionData } = useQuery(electionByTableNameQuery, {
+        skip: +params.site_text_id! === undefined,
+        variables: {
+            input: {
+                table_name: "site_text_keys",
+                row: +params.site_text_id!,
+            },
+        },
+    });
 
     useEffect(() => {
         loadUserInfo();
@@ -125,6 +139,43 @@ const CreateSiteTextTranslation = () => {
                     description_translation:
                         siteTextTranslationForm.description_translation,
                 },
+            },
+            update: (cache, result) => {
+                createBallotEntry({
+                    variables: {
+                        input: {
+                            created_by: userId,
+                            election_id: electionData?.electionByTableName.id!,
+                            table_name: "site_text_translations",
+                            row: result.data.createSiteTextTranslation
+                                .siteTextTranslation.id,
+                        },
+                    },
+                });
+
+                const cached = cache.readQuery({
+                    query: siteTextTranslationsQuery,
+                    variables: {
+                        siteTextId: +params.site_text_id!,
+                    },
+                    returnPartialData: true,
+                });
+                cache.writeQuery({
+                    query: siteTextTranslationsQuery,
+                    variables: {
+                        siteTextId: +params.site_text_id!,
+                    },
+                    data: {
+                        //@ts-expect-error
+                        ...cached,
+                        siteTextTranslations: [
+                            //@ts-expect-error
+                            ...(cached.siteTextTranslations ?? []),
+                            result.data.createSiteTextTranslation
+                                .siteTextTranslation,
+                        ],
+                    },
+                });
             },
             onCompleted: () => {
                 present({

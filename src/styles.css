@@ -38,6 +38,13 @@
     font-size: 14px;
 }
 
+.font-username {
+    font-weight: 400;
+    font-size: 12px;
+    opacity: 0.6;
+    padding-top: 5px;
+}
+
 .native-input {
     --padding-end: 15px;
     --padding-start: 15px;

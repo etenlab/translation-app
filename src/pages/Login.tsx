@@ -14,8 +14,7 @@ import "./Home.css";
 const Login = () => {
     const { keycloak } = useKeycloak();
     const login = useCallback(() => {
-        keycloak?.login({});
-        console.log("login called");
+        keycloak?.login();
     }, [keycloak]);
 
     const register = useCallback(() => {

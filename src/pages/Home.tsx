@@ -28,6 +28,7 @@ import LanguageProficiencyv2 from "../components/LanguageProficiencyv2";
 import SiteText from "../components/SiteText";
 import SiteTextTranslation from "../components/SiteTextTranslation";
 import SiteTextv2 from "../components/SiteTextv2";
+import Discussion from "../components/Discussion";
 import "./Home.css";
 
 const Home = () => {
@@ -82,11 +83,7 @@ const Home = () => {
                         </IonButtons>
                     </IonToolbar>
                 </IonHeader>
-                <IonContent
-                    fullscreen
-                    id="translation-app-content"
-                    scrollY={true}
-                >
+                <IonContent fullscreen id="translation-app-content" scrollY={true}>
                     <IonRouterOutlet>
                         <Route
                             path="/translation-app/apps/:app_id?"
@@ -151,6 +148,12 @@ const Home = () => {
                             path="/translation-app/create-language-proficiency/"
                             exact
                             render={() => <CreateLanguageProficiency />}
+                        />
+
+                        <Route
+                            path="/translation-app/discussion/:site_text/:site_text_translation_id/:app_id?/:site_text_id?"
+                            exact
+                            render={() => <Discussion />}
                         />
                     </IonRouterOutlet>
                 </IonContent>

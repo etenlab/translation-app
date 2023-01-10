@@ -1500,10 +1500,10 @@
     "minimatch" "^3.1.2"
     "strip-json-comments" "^3.1.1"
 
-"@eten-lab/discussion-box@^0.2.1":
-  "integrity" "sha512-DQOeuLgbf6KdTZHacb92PGWiOJGgW2Z85mcGZzcV3Cgt8B0TazuvfOEimmbt1PMjPPwBHts472Ea2wHGtbN94w=="
-  "resolved" "https://registry.npmjs.org/@eten-lab/discussion-box/-/discussion-box-0.2.1.tgz"
-  "version" "0.2.1"
+"@eten-lab/discussion-box@^0.2.3":
+  "integrity" "sha512-AjVCFpcou7uyImFsgIAiNTNrX/1n77i1cd14uXrTZtG2RK7q0m8QkD/dZUzzGhn8ilbuSx4klL7JiShZlu2dUw=="
+  "resolved" "https://registry.npmjs.org/@eten-lab/discussion-box/-/discussion-box-0.2.3.tgz"
+  "version" "0.2.3"
   dependencies:
     "@apollo/client" "^3.6.9"
     "@emotion/react" "^11.10.4"

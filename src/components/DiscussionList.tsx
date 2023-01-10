@@ -1,34 +1,16 @@
 import { useState } from 'react';
 import { IonContent, IonIcon } from "@ionic/react";
 import { arrowBack } from "ionicons/icons";
-import { useHistory, useParams, useLocation } from "react-router";
-import queryString from "query-string";
+import { useHistory } from "react-router";
 import Title from "../common/Title";
-import { Discussion as DiscussionBox, MockLoginForm } from '@eten-lab/discussion-box';
+import { DiscussionList as DiscussionsSummary, MockLoginForm } from '@eten-lab/discussion-box';
 
-export default function Discussion() {
-  const { site_text, site_text_translation_id } = useParams<{
-    site_text: string;
-    site_text_translation_id: string;
-  }>();
+export default function DiscussionList() {
   const [mockUserInfo, setMockUserInfo] = useState<{
     userInfo: unknown;
     userInfoType: 'email' | 'name' | 'user_id';
   } | null>(null);
   const history = useHistory();
-  const { search } = useLocation();
-  const params = queryString.parse(search);
-
-  const backHandler = () => {
-    if (params.site_text_id) {
-      history.push({
-        pathname: `/translation-app/site_texts`,
-        search: `site_text_id=${params.site_text_id}`,
-      })
-    } else {
-      history.goBack();
-    }
-  }
 
   return (
     <IonContent>
@@ -37,9 +19,11 @@ export default function Discussion() {
           <IonIcon
             className="back"
             icon={arrowBack}
-            onClick={backHandler}
+            onClick={() =>
+              history.goBack()
+            }
           />
-          <Title title={`${site_text} #${site_text_translation_id}`} />
+          <Title title="My Discussion" />
         </div>
 
         {!mockUserInfo && (
@@ -59,16 +43,10 @@ export default function Discussion() {
             </div>
           </>
         )}
-        {(mockUserInfo && site_text.trim() !== "" && site_text_translation_id) ? (
-          <DiscussionBox
-            tableName={site_text}
-            rowId={+site_text_translation_id}
+        {(mockUserInfo) ? (
+          <DiscussionsSummary
             userInfoType={mockUserInfo.userInfoType}
             userInfo={mockUserInfo.userInfo}
-            style={{
-              height: '100%',
-              padding: '0px',
-            }}
           />
         ) : null}
 

@@ -127,30 +127,27 @@ const SiteTextv2 = () => {
         getVotesStats();
         async function getVotesStats() {
             /*
-                maybe refactor
-            */
+                      maybe refactor
+                  */
             if (
                 translations?.siteTextTranslations.length > 0 &&
                 votesStats?.votesStats.length > 0
             ) {
-                let mergedTranslations =
-                    translations?.siteTextTranslations?.map(
-                        (translation: ISiteTextTranslation) => {
-                            const votedTranslation =
-                                votesStats?.votesStats?.find(
-                                    (voteStat: any) =>
-                                        voteStat.row === translation.id
-                                );
+                let mergedTranslations = translations?.siteTextTranslations?.map(
+                    (translation: ISiteTextTranslation) => {
+                        const votedTranslation = votesStats?.votesStats?.find(
+                            (voteStat: any) => voteStat.row === translation.id
+                        );
 
-                            if (votedTranslation) {
-                                return {
-                                    ...votedTranslation,
-                                    ...translation,
-                                };
-                            }
-                            return { ...translation, up: 0 };
+                        if (votedTranslation) {
+                            return {
+                                ...votedTranslation,
+                                ...translation,
+                            };
                         }
-                    );
+                        return { ...translation, up: 0 };
+                    }
+                );
 
                 mergedTranslations = orderBy(mergedTranslations, "up", "desc");
                 return setVotedTranslations(mergedTranslations);
@@ -166,8 +163,7 @@ const SiteTextv2 = () => {
         });
 
         const row = votes.find(
-            (vote: IVote) =>
-                vote.ballot_entry.row === id && vote.user_id === userId
+            (vote: IVote) => vote.ballot_entry.row === id && vote.user_id === userId
         );
 
         if (row) {
@@ -177,9 +173,7 @@ const SiteTextv2 = () => {
                     refetchQueries: [votesQuery, votesStatsQuery],
                     onCompleted: (data) => {
                         setVotes((prev: IVote[]) => [
-                            ...prev.filter(
-                                (vote) => vote.id !== data.deleteVote.id
-                            ),
+                            ...prev.filter((vote) => vote.id !== data.deleteVote.id),
                         ]);
                     },
                 });
@@ -195,9 +189,7 @@ const SiteTextv2 = () => {
                 refetchQueries: [votesQuery, votesStatsQuery],
                 onCompleted: (data) => {
                     setVotes((prev: IVote[]) => [
-                        ...prev.filter(
-                            (vote) => vote.id !== data.updateVote.id
-                        ),
+                        ...prev.filter((vote) => vote.id !== data.updateVote.id),
                         data.updateVote,
                     ]);
                 },
@@ -227,10 +219,7 @@ const SiteTextv2 = () => {
                     },
                 });
 
-                setVotes((prev: IVote[]) => [
-                    ...prev,
-                    result.data.createVote.vote,
-                ]);
+                setVotes((prev: IVote[]) => [...prev, result.data.createVote.vote]);
             },
         });
     };
@@ -249,9 +238,7 @@ const SiteTextv2 = () => {
                         className="back"
                         icon={arrowBack}
                         onClick={() =>
-                            history.push(
-                                `/translation-app/apps?app_id=${data?.siteText.app}`
-                            )
+                            history.push(`/translation-app/apps?app_id=${data?.siteText.app}`)
                         }
                     />
                     <Title title={data?.siteText.site_text_key} />
@@ -274,8 +261,7 @@ const SiteTextv2 = () => {
                         label="Add New Translation +"
                         onClick={() =>
                             history.push({
-                                pathname:
-                                    "/translation-app/create-site-text-translation",
+                                pathname: "/translation-app/create-site-text-translation",
                                 search: `site_text_id=${data?.siteText.id}`,
                             })
                         }
@@ -290,141 +276,114 @@ const SiteTextv2 = () => {
                         lines="none"
                     >
                         {votedTranslations &&
-                            votedTranslations.map(
-                                (item: ISiteTextTranslation) => {
-                                    let fill = null;
-                                    if (votes?.length) {
-                                        fill = votes?.find(
-                                            (vote) =>
-                                                vote.ballot_entry.row ===
-                                                    item.id &&
-                                                vote.user_id === userId
-                                        );
-                                    }
+                            votedTranslations.map((item: ISiteTextTranslation) => {
+                                let fill = null;
+                                if (votes?.length) {
+                                    fill = votes?.find(
+                                        (vote) =>
+                                            vote.ballot_entry.row === item.id &&
+                                            vote.user_id === userId
+                                    );
+                                }
 
-                                    return (
-                                        <IonItem
-                                            key={item.id}
+                                return (
+                                    <IonItem
+                                        key={item.id}
+                                        style={{
+                                            padding: "10px 0px 10px 0px",
+                                        }}
+                                    >
+                                        <div
                                             style={{
-                                                padding: "10px 0px 10px 0px",
+                                                width: "100%",
+                                                display: "flex",
+                                                flexDirection: "column",
                                             }}
                                         >
                                             <div
                                                 style={{
-                                                    width: "100%",
                                                     display: "flex",
-                                                    flexDirection: "column",
+                                                    flexDirection: "row",
+                                                    justifyContent: "space-between",
+                                                    width: "100%",
                                                 }}
                                             >
                                                 <div
+                                                    onClick={() =>
+                                                        history.push({
+                                                            pathname: `/translation-app/discussion/${item.site_text_translation}/${item.id}`,
+                                                            search: `site_text_id=${data?.siteText.id}`,
+                                                        })
+                                                    }
+                                                >
+                                                    <Title title={item.site_text_translation} />
+                                                </div>
+                                                <div
                                                     style={{
+                                                        alignSelf: "center",
                                                         display: "flex",
-                                                        flexDirection: "row",
-                                                        justifyContent:
-                                                            "space-between",
-                                                        width: "100%",
+                                                        justifyContent: "space-between",
+                                                        width: "27%",
                                                     }}
                                                 >
-                                                    <Title
-                                                        title={
-                                                            item.site_text_translation
-                                                        }
-                                                    />
-                                                    <div
-                                                        style={{
-                                                            alignSelf: "center",
-                                                            display: "flex",
-                                                            justifyContent:
-                                                                "space-between",
-                                                            width: "27%",
-                                                        }}
-                                                    >
-                                                        <div>
-                                                            <FiThumbsUp
-                                                                color="#43C888"
-                                                                fontSize="20px"
-                                                                fill={
-                                                                    fill?.up
-                                                                        ? "#43C888"
-                                                                        : "none"
-                                                                }
-                                                                onClick={() =>
-                                                                    handleVote(
-                                                                        true,
-                                                                        item.id
-                                                                    )
-                                                                }
-                                                            />
+                                                    <div>
+                                                        <FiThumbsUp
+                                                            color="#43C888"
+                                                            fontSize="20px"
+                                                            fill={fill?.up ? "#43C888" : "none"}
+                                                            onClick={() => handleVote(true, item.id)}
+                                                        />
 
-                                                            <IonText
-                                                                style={{
-                                                                    fontSize: 16,
-                                                                    fontWeight: 600,
-                                                                    paddingLeft:
-                                                                        "5px",
-                                                                    color: "#43C888",
-                                                                }}
-                                                            >
-                                                                {item.up ?? 0}
-                                                            </IonText>
-                                                        </div>
-                                                        <div>
-                                                            <FiThumbsDown
-                                                                color="#D44C4C"
-                                                                fontSize="20px"
-                                                                fill={
-                                                                    fill !=
-                                                                        null &&
-                                                                    fill.up ===
-                                                                        false
-                                                                        ? "#D44C4C"
-                                                                        : "none"
-                                                                }
-                                                                onClick={() =>
-                                                                    handleVote(
-                                                                        false,
-                                                                        item.id
-                                                                    )
-                                                                }
-                                                            />
-                                                            <IonText
-                                                                style={{
-                                                                    fontSize: 16,
-                                                                    fontWeight: 600,
-                                                                    paddingLeft:
-                                                                        "5px",
-                                                                    color: "#D44C4C",
-                                                                }}
-                                                            >
-                                                                {item.down ?? 0}
-                                                            </IonText>
-                                                        </div>
+                                                        <IonText
+                                                            style={{
+                                                                fontSize: 16,
+                                                                fontWeight: 600,
+                                                                paddingLeft: "5px",
+                                                                color: "#43C888",
+                                                            }}
+                                                        >
+                                                            {item.up ?? 0}
+                                                        </IonText>
+                                                    </div>
+                                                    <div>
+                                                        <FiThumbsDown
+                                                            color="#D44C4C"
+                                                            fontSize="20px"
+                                                            fill={
+                                                                fill != null && fill.up === false
+                                                                    ? "#D44C4C"
+                                                                    : "none"
+                                                            }
+                                                            onClick={() => handleVote(false, item.id)}
+                                                        />
+                                                        <IonText
+                                                            style={{
+                                                                fontSize: 16,
+                                                                fontWeight: 600,
+                                                                paddingLeft: "5px",
+                                                                color: "#D44C4C",
+                                                            }}
+                                                        >
+                                                            {item.down ?? 0}
+                                                        </IonText>
                                                     </div>
                                                 </div>
-                                                <IonText>
-                                                    {
-                                                        item.description_translation
-                                                    }
-                                                </IonText>
-                                                <IonText className="font-username">
-                                                    Translation by{" "}
-                                                    {item.user_id}
-                                                </IonText>
                                             </div>
-                                        </IonItem>
-                                    );
-                                }
-                            )}
+                                            <IonText>{item.description_translation}</IonText>
+                                            <IonText className="font-username">
+                                                Translation by {item.user_id}
+                                            </IonText>
+                                        </div>
+                                    </IonItem>
+                                );
+                            })}
                     </IonList>
 
-                    {!loading &&
-                        translations?.siteTextTranslations.length < 1 && (
-                            <div>
-                                <IonText>
-                                    No site translations available
-                                </IonText>
-                            </div>
-                        )}
+                    {!loading && translations?.siteTextTranslations.length < 1 && (
+                        <div>
+                            <IonText>No site translations available</IonText>
+                        </div>
+                    )}
                 </div>
             </div>
         </IonContent>

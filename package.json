@@ -11,6 +11,7 @@
     "@capacitor/status-bar": "4.0.1",
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
+    "@eten-lab/discussion-box": "^0.2.3",
     "@habx/apollo-multi-endpoint-link": "^2.8.0",
     "@hookform/resolvers": "^2.9.10",
     "@ionic/react": "^6.0.0",

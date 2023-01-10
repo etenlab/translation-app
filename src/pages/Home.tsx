@@ -11,11 +11,13 @@ import {
     IonRouterOutlet,
     IonTitle,
     IonToolbar,
+    IonIcon,
 } from "@ionic/react";
+import { chatbubbleOutline, notificationsOutline } from "ionicons/icons";
 import { IonReactRouter } from "@ionic/react-router";
 import { useKeycloak } from "@react-keycloak/web";
 import { useCallback } from "react";
-import { Route } from "react-router";
+import { Route } from "react-router-dom";
 import Application from "../components/Application";
 import AppList from "../components/AppList";
 import CreateApplication from "../components/CreateApplication";
@@ -28,6 +30,8 @@ import LanguageProficiencyv2 from "../components/LanguageProficiencyv2";
 import SiteText from "../components/SiteText";
 import SiteTextTranslation from "../components/SiteTextTranslation";
 import SiteTextv2 from "../components/SiteTextv2";
+import Discussion from "../components/Discussion";
+import DiscussionList from "../components/DiscussionList";
 import "./Home.css";
 
 const Home = () => {
@@ -65,28 +69,46 @@ const Home = () => {
                         <IonTitle>Translation App</IonTitle>
                         <IonButtons slot="primary">
                             {keycloak?.authenticated && (
-                                <button
+                                <div
                                     style={{
-                                        fontSize: "16px",
-                                        padding: "10px 5px",
-                                        color: "#000",
-                                        backgroundColor: "#fff",
-                                        margin: "0px 2px",
+                                        display: "flex",
+                                        gap: "30px",
+                                        justifyContent: "center",
+                                        alignItems: "center",
                                     }}
-                                    type="button"
-                                    onClick={logout}
                                 >
-                                    Logout
-                                </button>
+                                    <a href="/translation-app/my-discussions">
+                                        <IonIcon
+                                            className="ion-ios7-chatbubble-outline"
+                                            icon={chatbubbleOutline}
+                                        />
+                                    </a>
+                                    <a href="/translation-app/notifications">
+                                        <IonIcon
+                                            className="ion-ios7-chatbubble-outline"
+                                            icon={notificationsOutline}
+                                        />
+                                    </a>
+                                    <button
+                                        style={{
+                                            fontSize: "16px",
+                                            padding: "10px 5px",
+                                            color: "#000",
+                                            backgroundColor: "#fff",
+                                            margin: "0px 2px",
+                                        }}
+                                        type="button"
+                                        onClick={logout}
+                                    >
+                                        Logout
+                                    </button>
+                                </div>
                             )}
                         </IonButtons>
+                        <IonButtons></IonButtons>
                     </IonToolbar>
                 </IonHeader>
-                <IonContent
-                    fullscreen
-                    id="translation-app-content"
-                    scrollY={true}
-                >
+                <IonContent fullscreen id="translation-app-content" scrollY={true}>
                     <IonRouterOutlet>
                         <Route
                             path="/translation-app/apps/:app_id?"
@@ -151,6 +173,18 @@ const Home = () => {
                             path="/translation-app/create-language-proficiency/"
                             exact
                             render={() => <CreateLanguageProficiency />}
+                        />
+
+                        <Route
+                            path="/translation-app/discussion/:site_text/:site_text_translation_id/:app_id?/:site_text_id?"
+                            exact
+                            render={() => <Discussion />}
+                        />
+
+                        <Route
+                            path="/translation-app/my-discussions"
+                            exact
+                            render={() => <DiscussionList />}
                         />
                     </IonRouterOutlet>
                 </IonContent>

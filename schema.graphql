@@ -1,0 +1,185 @@
+schema {
+  query: query_root
+  mutation: mutation_root
+}
+
+input AppItemInput {
+  app_name: String!
+}
+
+input SiteTextInput {
+  app: Int!
+  description: String!
+  language_id: Int
+  language_table: String
+  site_text_key: String!
+}
+
+input SiteTextTranslationInput {
+  language_id: Int
+  language_table: String
+  site_text: Int!
+  site_text_translation: String!
+  user_id: String!
+}
+
+input LanguageProficiencyInput {
+  language_id: Int!
+  language_table: String!
+  skill_level: LanguageProficiencyEnum!
+  user_id: String!
+} 
+
+input ElectionInput {
+  app_id: Int!
+  created_by: String!
+  name: String!
+}
+
+input BallotEntryInput {
+  created_by: String!
+  election_id: Int!
+  row: Int!
+  table_name: String!
+}
+
+input VoteInput {
+  ballot_entry_id: Int!
+  up: Boolean!
+  user_id: String!
+}
+
+input UpdateVote {
+  up: Boolean!
+  user_id: String!
+  vote_id: Int!
+}
+
+type query_root {
+  appItem(id: Float!): AppItem!
+  appItems: [AppItem!]!
+  siteText: SiteText!
+  siteTexts: [SiteText!]!
+  siteTextsByApp(id: Float!, iso_code: String): [SiteText!]!
+  siteTextTranslations: [SiteTextTranslation!]!
+  languageProficiencies: [LanguageProficiency!]!
+  languageProfienciesByUserId(user_id: String): [LanguageProficiency!]!
+  ballotEntryByRowId: BallotEntry!
+  electionByTableName: Election!
+  votes(user_id: String): [Vote!]!
+  votesStats(election_id: Float!): [VoteStat!]!
+}
+
+type AppItemOutput {
+  appItem: AppItem!
+}
+
+type SiteTextOutput {
+  siteText: SiteText!
+}
+
+type SiteTextTranslationOutput {
+  siteTextTranslation: SiteTextTranslation!
+}
+
+type LanguageProficiencyOutput {
+  languageProficiency: LanguageProficiency!
+}
+
+type ElectionOutput {
+  election: Election!
+}
+
+type BallotEntryOutput {
+  ballotEntry: BallotEntry!
+}
+
+type VoteOutput {
+  vote: Vote!
+}
+
+type mutation_root {
+  createAppItem(input: AppItemInput!): AppItemOutput!
+  createBallotEntry(input: BallotEntryInput!): BallotEntryOutput!
+  createElection(input: ElectionInput!): ElectionOutput!
+  createSiteText(input: SiteTextInput!): SiteTextOutput!
+  createSiteTextTranslation(input: SiteTextTranslationInput!): SiteTextTranslationOutput!
+  createLanguageProficiency(input: LanguageProficiencyInput!): LanguageProficiencyOutput!
+  createVote(input: VoteInput!): VoteOutput!
+  updateSiteText: SiteTextOutput!
+  updateVote(input: UpdateVote!): Boolean!
+  deleteVote(id: Float!): Boolean!
+}
+
+type AppItem {
+  app_name: String!
+  id: Int!
+}
+
+type SiteText {
+  app: Int!
+  description: String!
+  id: Int!
+  language_id: Int!
+  language_table: String!
+  site_text_key: String!
+  translations: Int!
+}
+
+type SiteTextTranslation {
+  id: Int!
+  language_id: Int!
+  language_table: String!
+  site_text: Int!
+  site_text_translation: String!
+  user_id: String!
+}
+
+type LanguageProficiency {
+  id: Int!
+  language_id: Int!
+  language_table: String!
+  skill_level: LanguageProficiencyEnum!
+  user_id: String!
+  ref_name: String!
+}
+
+type Election {
+  app_id: Int!
+  created_by: String!
+  id: Int!
+  name: String!
+  row: Int!
+  table_name: String!
+}
+
+type BallotEntry {
+  created_by: String!
+  election_id: Int!
+  id: Int!
+  row: Int!
+  table_name: String!
+}
+
+type Vote {
+  ballot_entry_id: Int!
+  ballot_entry: BallotEntry!
+  id: Int!
+  up: Boolean!
+  user_id: String!
+}
+
+type VoteStat {
+  ballot_entry_id: Int!
+  row: Int!
+  down: Int!
+  up: Int!
+}
+
+enum LanguageProficiencyEnum {
+  Conversational
+  Fluent
+  Proficient
+  RecognizeWords
+  StartedLearning
+}
